@@ -24,12 +24,12 @@ def show_property_distributions(data, data_type, outliers=None):
 
     Parameters
     ----------
-        data : NumPy Array
-            matrix of SPM data supplied by user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        outliers : NumPy Array
-            boolean, 2D array of outlier flags (1's) for functions to pass over
+    data : NumPy Array
+        matrix of SPM data supplied by user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    outliers : NumPy Array
+        boolean, 2D array of outlier flags (1's) for functions to pass over
     
     Returns
     ----------
@@ -64,13 +64,13 @@ def get_correlations(path):
     
     Parameters
     ----------
-        path : str
-            data directory
+    path : str
+        data directory
     
     Returns
     ----------
-        cors :list
-            correlation between all pairs of properties per file
+    cors :list
+        correlation between all pairs of properties per file
     """
     files = os.listdir(path)
     N = len(files)
@@ -96,16 +96,17 @@ def get_correlation_values(cors, r, c):
     
     Parameters
     ----------
-        cors : list
-            propertiess correlations per file
-        r : int
-            first property index
-        c : int
-            second property index
+    cors : list
+        propertiess correlations per file
+    r : int
+        first property index
+    c : int
+        second property index
             
     Returns
     ----------
-        rc_cors (list): correlation between properties r and c per file
+    rc_cors : list
+        correlation between properties r and c per file
     """
     rc_cors = [cor[r, c] for cor in cors]
     return rc_cors
@@ -117,12 +118,12 @@ def show_correlations(num_props, data_type, path):
     
     Parameters
     ----------
-        num_props : int
-            number of properties
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        path : str
-            data directory
+    num_props : int
+        number of properties
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    path : str
+        data directory
         
     Returns
     ----------
@@ -170,17 +171,17 @@ def extract_outliers(data, data_type, threshold=2.5):
 
     Parameters
     ----------
-        data : NumPy Array
-            SPM data supplied by the user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        threshold : float
-            z-score threshold at which to flag a pixel as an outlier
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    threshold : float
+        z-score threshold at which to flag a pixel as an outlier
         
     Returns
     ----------
-        outliers : NumPy Array
-            boolean, 2D array of outlier flags (1's) for functions to pass over
+    outliers : NumPy Array
+        boolean, 2D array of outlier flags (1's) for functions to pass over
     """
     props = INFO[data_type]["properties"]
     if "Height" in props:
@@ -209,12 +210,12 @@ def show_outliers(data, data_type, outliers):
     
     Parameters
     ----------    
-        data : NumPy Array
-            SPM data supplied by the user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        outliers : NumPy Array
-            boolean, 2D array of outlier flags (1's) for functions to pass over
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    outliers : NumPy Array
+        boolean, 2D array of outlier flags (1's) for functions to pass over
         
     Returns
     ----------
@@ -255,15 +256,15 @@ def smooth_outliers_from_data(data, outliers):
     
     Parameters
     ----------
-        data : NumPy Array
-            SPM data supplied by the user
-        outliers : NumPy Array
-            boolean, 2D array of outlier flags (1's) for functions to pass over
+    data : NumPy Array
+        SPM data supplied by the user
+    outliers : NumPy Array
+        boolean, 2D array of outlier flags (1's) for functions to pass over
             
     Returns
     ----------
-        no_outliers_data : NumPy Array
-            SPM data with outlier values replaced with the channel's mean value
+    no_outliers_data : NumPy Array
+        SPM data with outlier values replaced with the channel's mean value
     """
     h, w, c = data.shape
 
@@ -280,17 +281,17 @@ def remove_noisy_channels(data, data_properties):
     
     Parameters
     ----------
-        data : NumPy Array
-            SPM data supplied by the user
-        data_properties : dict
-            channel properties of the SPM data
+    data : NumPy Array
+        SPM data supplied by the user
+    data_properties : dict
+        channel properties of the SPM data
             
     Returns
     ----------
-        data : NumPy Array
-            SPM data supplied by the user
-        data_properties : dict
-            channel properties of the SPM data
+    data : NumPy Array
+        SPM data supplied by the user
+    data_properties : dict
+        channel properties of the SPM data
     """
     buckets = 100  # TODO optimize
 
@@ -324,17 +325,17 @@ def apply_frequency_removal(data, data_type, compression_percent=95):
     
     Parameters
     ----------
-        data : NumPy Array
-            SPM data supplied by the user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        compression_percent : float
-            percentage of compression
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    compression_percent : float
+        percentage of compression
             
     Returns
     ----------
-        new_data : NumPy Array
-            compressed data
+    new_data : NumPy Array
+        compressed data
     """
 
     def remove_small_magnitude_freqs(f_prop_shift, h, w, compression_percent):
@@ -343,19 +344,19 @@ def apply_frequency_removal(data, data_type, compression_percent=95):
         
         Parameters
         ----------
-            f_prop_shift : NumPy Array
-                frequencies
-            h : int
-                height of data array
-            w : int
-                width of data array
-            compression_percent : float
-                percentage of compression
+        f_prop_shift : NumPy Array
+            frequencies
+        h : int
+            height of data array
+        w : int
+            width of data array
+        compression_percent : float
+            percentage of compression
             
         Returns
         ----------
-            f_prop_shift : NumPy Array
-                high frequencies
+        f_prop_shift : NumPy Array
+            high frequencies
         """
         mags = np.abs(f_prop_shift)
         thresh = np.percentile(mags, compression_percent)

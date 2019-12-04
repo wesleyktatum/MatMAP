@@ -11,8 +11,8 @@ descriptive statistics are dynamically sorted into dictionaries of lists
 and arrays so that they may be iterably accessed and analyzed.
 """
 
-LABEL_THRESH = 10  # each label must have more than this number of pixels
-BG_THRESH = 100000 # NOTE 10k for smaller grains and 100k for bigger grains
+LABEL_THRESH = 4  # each label must have more than this number of pixels
+BG_THRESH = 10000 # NOTE 10k for smaller grains and 100k for bigger grains
 
 data_channels = config.data_info["QNM"]["properties"]
 
@@ -22,13 +22,13 @@ def relabel(labels):
 
     Parameters
     ----------
-        labels : NumPy Array
-            matrix of classification per pixel
+    labels : NumPy Array
+        matrix of classification per pixel
 
     Returns
     ----------
-        labels : NumPy Array
-            matrix of classification per pixel in order
+    labels : NumPy Array
+        matrix of classification per pixel in order
     """
     unique_labels = get_unique_labels(labels)[::-1]
     max_label = max(unique_labels)
@@ -47,13 +47,13 @@ def get_unique_labels(labels):
 
     Parameters
     ----------
-        labels : NumPy Array
-            matrix of classification per pixel
+    labels : NumPy Array
+        matrix of classification per pixel
 
     Returns
     ----------
-        unique_labels : NumPy Array
-            1D array that lists all of the unique labels
+    unique_labels : NumPy Array
+        1D array that lists all of the unique labels
     """
     labels = labels.astype(np.int64)
     unique_labels = [a for a in np.unique(labels) if isinstance(a, np.int64)]
@@ -69,19 +69,19 @@ def get_closest_value(labels, outliers, i, j):
     
     Parameters
     ----------
-        labels : NumPy Array
-            matrix of classification per pixel
-        outliers : NumPy Array
-            outliers
-        i : int
-            row value of pixel
-        j : int
-            col value of pixel
+    labels : NumPy Array
+        matrix of classification per pixel
+    outliers : NumPy Array
+        outliers
+    i : int
+        row value of pixel
+    j : int
+        col value of pixel
             
     Returns
     ----------
-        value : int
-            closest non-outlier value.
+    value : int
+        closest non-outlier value.
     """
     h, w = labels.shape
 
@@ -146,14 +146,14 @@ def fill_out_zeros(labels, zeros):
     
     Parameters
     ----------
-        labels : NumPy Array
-            matrix of classification per pixel
-        zeros : NumPy Array
-            zero values
+    labels : NumPy Array
+        matrix of classification per pixel
+    zeros : NumPy Array
+        zero values
     Returns
     ----------
-        labels : int
-            closest non-outlier value.
+    labels : int
+        closest non-outlier value.
     """
     if len(labels.shape) < 3:
         labels = np.expand_dims(labels, axis=2)
@@ -174,15 +174,15 @@ def get_significant_labels(labels, bg_contrast_flag=False):
     
     Parameters
     ----------
-        labels : NumPy Array
-            matrix of classification per pixel
-        bg_contrast_flag : bool
-            highlights biggest grain (background) in plot
+    labels : NumPy Array
+        matrix of classification per pixel
+     bg_contrast_flag : bool
+        highlights biggest grain (background) in plot
             
     Returns
     ----------
-        new_labels : NumPy Array
-            matrix of classification per pixel for large components
+    new_labels : NumPy Array
+        matrix of classification per pixel for large components
     """
     unique_labels = get_unique_labels(labels)
     grain_labels = [l for l in unique_labels if np.sum(labels == l) > LABEL_THRESH]
@@ -212,17 +212,17 @@ def array_stats(array):
 
     Parameters
     ----------
-        array : NumPy Array
-            single channel of data array
+    array : NumPy Array
+        single channel of data array
 
     Returns
     ----------
-        median : float64
-            median value of the array
-        std_dev : float64
-            standard deviation of the array
-        var : float64
-            variance of the array
+    median : float64
+        median value of the array
+    std_dev : float64
+        standard deviation of the array
+    var : float64
+        variance of the array
     """
     median = np.median(array)
     std_dev = np.std(array)
@@ -238,19 +238,19 @@ def phase_sort(array, labels, n_components):
     
     Parameters
     ----------
-        array : NumPy Array
-            Array of SPM data
-        phase_labels : NumPy Array
-            array of phase labels
-        n_components : int
-            number of phases for sorting
+    array : NumPy Array
+        Array of SPM data
+    phase_labels : NumPy Array
+        array of phase labels
+    n_components : int
+        number of phases for sorting
     
     Returns
     ----------
-        phases : dict
-            Dictionary of numpy arrays, where each key is the phase number and 
-            each value is a flattened array of the pixels in that phase and 
-            their properties
+    phases : dict
+        Dictionary of numpy arrays, where each key is the phase number and 
+        each value is a flattened array of the pixels in that phase and 
+        their properties
     """
     x, y, z = array.shape
 
@@ -357,8 +357,8 @@ def plot_single_phase_props(array):
     
     Parameters
     ----------
-        array : NumPy Array
-            Array of SPM data
+    array : NumPy Array
+        Array of SPM data
     
     Returns
     ----------
@@ -398,10 +398,10 @@ def plot_all_phases_props(phases):
     
     Parameters
     ----------
-        phases : dict
-            Dictionary of numpy arrays, where each key is the phase number and 
-            each value is a flattened array of the pixels in that phase and 
-            their properties
+    phases : dict
+        Dictionary of numpy arrays, where each key is the phase number and 
+        each value is a flattened array of the pixels in that phase and 
+        their properties
     
     Returns
     ----------
@@ -421,17 +421,17 @@ def gen_phase_stats(phases):
     
     Parameters
     ----------
-        phases : dict
-            Dictionary of numpy arrays, where each key is the phase number and 
-            each value a flattened array of the
-            pixels in that phase and their properties
+    phases : dict
+        Dictionary of numpy arrays, where each key is the phase number and 
+        each value a flattened array of the
+        pixels in that phase and their properties
         
     Returns
     ----------
-        phase_stats : dict
-            Dictionary of numpy arrays, where each key is the phase number and 
-            each value is a flattened array of the basic statistical analysis of
-            the phase properties
+    phase_stats : dict
+        Dictionary of numpy arrays, where each key is the phase number and 
+        each value is a flattened array of the basic statistical analysis of
+        the phase properties
     """
     phase_stats = {}
     keys = ["median", "standard deviation", "variance"]
@@ -454,19 +454,19 @@ def grain_sort(array, grain_labels):
     
     Parameters
     ----------
-        array : NumPy Array
-            Array of SPM data
-        domain_labels : NumPy Array
-            Array of domain labels
-        n_components : int
-            number of phases for sorting
+    array : NumPy Array
+        Array of SPM data
+    domain_labels : NumPy Array
+        Array of domain labels
+    n_components : int
+        number of phases for sorting
     
     Returns
     ----------
-        grain_props : dict
-            Dictionary of numpy arrays, where each key is the phase number and
-            each value is a flattened array of the pixels in that grain and 
-            their properties
+    grain_props : dict
+        Dictionary of numpy arrays, where each key is the phase number and
+        each value is a flattened array of the pixels in that grain and 
+        their properties
     """
     x, y, z = array.shape
 
@@ -504,17 +504,17 @@ def gen_grain_stats(grain_props):
     
     Parameters
     ----------
-        grain_props : dict
-            Dictionary of numpy arrays, where each key is the phase number and
-            each value is a flattened array of the pixels in that grain and 
-            their properties
+    grain_props : dict
+        Dictionary of numpy arrays, where each key is the phase number and
+        each value is a flattened array of the pixels in that grain and 
+        their properties
         
     Returns
     ----------
-        grain_stats : dict
-            Dictionary of numpy arrays, where each key is the grain number and 
-            each value is a flattened array of the basic statistical analysis 
-            of the grain properties
+    grain_stats : dict
+        Dictionary of numpy arrays, where each key is the grain number and 
+        each value is a flattened array of the basic statistical analysis 
+        of the grain properties
     """
     grain_stats = {}
     keys = ["median", "standard deviation", "variance"]

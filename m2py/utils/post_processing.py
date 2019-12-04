@@ -21,9 +21,12 @@ def store_results(labels, output_file):
     """
     Store results.
 
-    Args:
-        labels (NumPy Array): matrix of classification per pixel
-        output_file (str): output file for results
+    Parameters
+    ----------
+    labels : NumPy Array
+        matrix of classification per pixel
+    output_file : str
+        output file for results
     """
     np.save(output_file, labels)
 
@@ -34,14 +37,14 @@ def show_classification(labels, data, data_type, input_cmap="jet"):
     
     Parameters
     ----------
-        labels : NumPy Array
-            matrix of classification per pixel
-        data : NumPy Array
-            matrix containing user entered SPM data
-        data_type : str
-            string designating data type (QNM, AMFM, cAFM)
-        input_cmap : str
-            string designating matplotlib colormap to use
+    labels : NumPy Array
+        matrix of classification per pixel
+    data : NumPy Array
+        matrix containing user entered SPM data
+    data_type : str
+        string designating data type (QNM, AMFM, cAFM)
+    input_cmap : str
+        string designating matplotlib colormap to use
         
     Returns
     ----------
@@ -83,14 +86,14 @@ def show_classification_distributions(labels, data, data_type, title_flag=True):
     
     Parameters
     ----------
-        labels : NumPy Array
-            matrix of classification per pixel
-        data : NumPy Array
-            SPM data supplied by the user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        title_flag : bool
-            flag for plots to show titles or not
+    labels : NumPy Array
+        matrix of classification per pixel
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    title_flag : bool
+        flag for plots to show titles or not
             
     Returns
     ----------
@@ -138,12 +141,12 @@ def show_grain_area_distribution(labels, data_type, data_subtype):
 
     Parameters
     ----------
-        labels : NumPy Array
-            matrix of classification per pixel
-        data : NumPy Array
-            SPM data supplied by the user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    labels : NumPy Array
+        matrix of classification per pixel
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
 
     Returns
     ----------
@@ -191,14 +194,14 @@ def show_distributions_together(labels, data, data_type, input_cmap):
     
     Parameters
     ----------
-        labels : NumPy Array
-            matrix of classification per pixel
-        data : NumPy Array
-            SPM data supplied by the user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        input_cmap : str
-            specifies which color map to use
+    labels : NumPy Array
+        matrix of classification per pixel
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    input_cmap : str
+        specifies which color map to use
             
     Returns
     ----------
@@ -241,14 +244,14 @@ def show_overlaid_distribution(probs, data, data_type, outliers=None):
     Plots distributions overlaid on pixels
     Parameters
     ----------
-        probs : NumPy Array
-            array of probabilities per pixel
-        data : NumPy Array
-            SPM data supplied by the user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        outliers : NumPy Array
-            array of outlier pixels
+    probs : NumPy Array
+        array of probabilities per pixel
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    outliers : NumPy Array
+        array of outlier pixels
 
     Returns
     ----------
@@ -289,12 +292,12 @@ def show_classification_correlation(labels, data, data_type, title_flag=True, sa
     
     Parameters
     ----------
-        data : NumPy Array
-            SPM data supplied by the user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        outliers : NumPy Array
-            boolean, 2D array of outlier flags (1's) for functions to pass over
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    outliers : NumPy Array
+        boolean, 2D array of outlier flags (1's) for functions to pass over
     
     Returns
     ----------
@@ -360,10 +363,10 @@ def colorbar_index(ncolors, cmap):
 
     Parameters
     ----------
-        ncolors : int
-            number of colors.
-        cmap : str
-            colormap instance
+    ncolors : int
+        number of colors.
+    cmap : str
+        colormap instance
 
     Returns
     ----------
@@ -386,14 +389,14 @@ def cmap_discretize(cmap, N):
 
     Parameters
     ----------
-        cmap : str
-            colormap instance.
-        N : int
-            number of colors.
+    cmap : str
+        colormap instance.
+    N : int
+        number of colors.
             
     Returns
     ----------
-        discretized version of continuous colormap
+    discretized version of continuous colormap
     """
     colors_i = np.concatenate((np.linspace(0, 1.0, N), (0.0, 0.0, 0.0, 0.0)))
     colors_rgba = cmap(colors_i)
