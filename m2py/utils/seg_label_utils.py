@@ -12,7 +12,7 @@ and arrays so that they may be iterably accessed and analyzed.
 """
 
 LABEL_THRESH = 100  # each label must have more than this number of pixels
-BG_THRESH = 10000 # NOTE 10k for smaller grains and 100k for bigger grains
+BG_THRESH = 100000 # NOTE 10k for smaller grains and 100k for bigger grains
 
 data_channels = config.data_info["QNM"]["properties"]
 
