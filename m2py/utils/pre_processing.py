@@ -1,11 +1,16 @@
 import os
+import sys
 
 import numpy as np
 from scipy import signal
 from matplotlib import pyplot, colors
 from scipy.fftpack import fft2, ifft2, fftshift, ifftshift
 
+module_path = os.path.abspath(os.path.join('../'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
 from m2py.utils import config
+from m2py.utils import utils
 
 INFO = config.data_info
 
@@ -42,7 +47,7 @@ def show_property_distributions(data, data_type, outliers=None):
     num_cols = NUM_COLS
     num_rows = int(np.ceil(num_plots / num_cols))
 
-    fig = pyplot.figure(figsize=(10, 15), dpi=80, facecolor="w", edgecolor="k")
+    fig = pyplot.figure(figsize=(12, 18), dpi=80, facecolor="w", edgecolor="k")
     for j in range(c):
         if outliers is not None:
             x = [data[n, m, j] for n in range(h) for m in range(w) if not outliers[n, m]]
@@ -165,35 +170,64 @@ def show_correlations(num_props, data_type, path):
 ## Outlier detection and filtering methods
 
 
-def extract_outliers(data, data_type, threshold=2.5):
+def extract_outliers(data, data_type, prop, threshold=2.5, chip_size=512, stride=512):
     """
     Finds outliers from data
-
     Parameters
     ----------
-    data : NumPy Array
-        SPM data supplied by the user
-    data_type : str
-        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-    threshold : float
-        z-score threshold at which to flag a pixel as an outlier
-        
+        data : NumPy Array
+            SPM data supplied by the user
+        data_type : str
+            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+        prop : str
+            data property to be used for outlier detection
+        threshold : float
+            z-score threshold at which to flag a pixel as an outlier
+        chip_size : int
+            size of generated chips
+        stride: int
+            number of pixels skipped over to generate adjacent chips
     Returns
     ----------
-    outliers : NumPy Array
-        boolean, 2D array of outlier flags (1's) for functions to pass over
+        outliers : NumPy Array
+            boolean, 2D array of outlier flags (1's) for functions to pass over
     """
     props = INFO[data_type]["properties"]
-    if "Height" in props:
-        height_index = props.index("Height")
+    if prop in props:
+        prop_index = props.index(prop)
     else:
+        print(f"Property {prop} not found")
         return None
 
-    x = data[:, :, height_index]
+    prop_data = data[:, :, prop_index]
+    prop_chips = utils.generate_chips_from_data(prop_data, chip_size, stride)
+    outlier_chips = {}
 
+    for key, chip in prop_chips.items():
+        temp_outliers = apply_outlier_extraction(chip, threshold)
+        outlier_chips[key] = temp_outliers
+
+    outliers = utils.stitch_up_chips(outlier_chips)
+    return outliers
+
+
+def apply_outlier_extraction(prop_data, threshold=2.5):
+    """
+    Apply outlier extraction routine to single channel data array.
+    Parameters
+    ----------
+        data : NumPy Array
+            SPM data (for a single property) supplied by the user
+        threshold : float
+            z-score threshold at which to flag a pixel as an outlier
+    Returns
+    ----------
+        outliers : NumPy Array
+            boolean, 2D array of outlier flags (1's) for functions to pass over
+    """
     # Smooth data
     flt = np.array([[0.5, 0.5, 0.5], [0.5, 1, 0.5], [0.5, 0.5, 0.5]])
-    y = signal.convolve2d(x, flt, boundary="symm", mode="same")
+    y = signal.convolve2d(prop_data, flt, boundary="symm", mode="same")
 
     # Compute z-scores
     u = np.mean(y)
@@ -201,49 +235,55 @@ def extract_outliers(data, data_type, threshold=2.5):
     z = np.abs((u - y) / s)
 
     # Threshold by z-score
-    return z > threshold
+    outliers = z > threshold
+
+    return outliers
 
 
-def show_outliers(data, data_type, outliers):
+def show_outliers(data, data_type, prop, outliers):
     """
     Plots data properties and outliers
     
     Parameters
     ----------    
-    data : NumPy Array
-        SPM data supplied by the user
-    data_type : str
-        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-    outliers : NumPy Array
-        boolean, 2D array of outlier flags (1's) for functions to pass over
+        data : NumPy Array
+            SPM data supplied by the user
+        data_type : str
+            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+        prop : str
+            data property to be used for outlier extraction
+        outliers : NumPy Array
+            boolean, 2D array of outlier flags (1's) for functions to pass over
         
     Returns
     ----------
     
     """
     props = INFO[data_type]["properties"]
-    if "Height" in props:
-        height_index = props.index("Height")
+    if prop in props:
+        prop_index = props.index(prop)
     else:
+        print(f"Property {prop} not found")
         return
 
     fig = pyplot.figure(figsize=(15, 4))
 
     pyplot.subplot(1, 3, 1)
-    m = pyplot.imshow(data[:, :, height_index], aspect="auto")
-    pyplot.title("Height")
+    m = pyplot.imshow(data[:, :, prop_index], aspect="auto")
+    pyplot.title(prop)
     pyplot.colorbar(m, fraction=0.046, pad=0.04)
 
     pyplot.subplot(1, 3, 2)
     pyplot.imshow(outliers, aspect="auto")
-    pyplot.title("Height Outliers")
+    pyplot.title(f"{prop} Outliers")
 
     no_outliers_data = np.copy(data)
-    height_data = no_outliers_data[:, :, height_index]
-    height_data[outliers == 1] = np.mean(height_data)
+    prop_data = no_outliers_data[:, :, prop_index]
+    prop_data[outliers == 1] = np.mean(prop_data)
+
     pyplot.subplot(1, 3, 3)
-    m = pyplot.imshow(height_data, aspect="auto")
-    pyplot.title("Height")
+    m = pyplot.imshow(prop_data, aspect="auto")
+    pyplot.title(prop)
     pyplot.colorbar(m, fraction=0.046, pad=0.04)
 
     pyplot.tight_layout()
@@ -256,15 +296,15 @@ def smooth_outliers_from_data(data, outliers):
     
     Parameters
     ----------
-    data : NumPy Array
-        SPM data supplied by the user
-    outliers : NumPy Array
-        boolean, 2D array of outlier flags (1's) for functions to pass over
+        data : NumPy Array
+            SPM data supplied by the user
+        outliers : NumPy Array
+            boolean, 2D array of outlier flags (1's) for functions to pass over
             
     Returns
     ----------
-    no_outliers_data : NumPy Array
-        SPM data with outlier values replaced with the channel's mean value
+        no_outliers_data : NumPy Array
+            SPM data with outlier values replaced with the channel's mean value
     """
     h, w, c = data.shape
 
@@ -281,17 +321,17 @@ def remove_noisy_channels(data, data_properties):
     
     Parameters
     ----------
-    data : NumPy Array
-        SPM data supplied by the user
-    data_properties : dict
-        channel properties of the SPM data
+        data : NumPy Array
+            SPM data supplied by the user
+        data_properties : dict
+            channel properties of the SPM data
             
     Returns
     ----------
-    data : NumPy Array
-        SPM data supplied by the user
-    data_properties : dict
-        channel properties of the SPM data
+        data : NumPy Array
+            SPM data supplied by the user
+        data_properties : dict
+            channel properties of the SPM data
     """
     buckets = 100  # TODO optimize
 
@@ -373,31 +413,34 @@ def apply_frequency_removal(data, data_type, compression_percent=95):
     num_cols = 3 * NUM_COLS
     num_rows = int(np.ceil(num_plots / num_cols))
 
-    fig = pyplot.figure(figsize=(14, 21), dpi=80, facecolor="w", edgecolor="k")
+    fig = pyplot.figure(figsize=(18, 12), dpi=80, facecolor="w", edgecolor="k")
     count = 1
     for k in range(c):
         prop = data[:, :, k]
 
-        pyplot.subplot(num_rows, num_cols, count)
-        pyplot.title(props[k])
-        pyplot.imshow(prop)
+        ax1 = pyplot.subplot(num_rows, num_cols, count)
+        ax1.margins(-0.49)
+        ax1.set_title(props[k])
+        ax1.imshow(prop)
         count += 1
 
         f_prop = fft2(prop)
         f_prop_shift = fftshift(f_prop)
         f_prop_shift = remove_small_magnitude_freqs(f_prop_shift, h, w, compression_percent)
 
-        pyplot.subplot(num_rows, num_cols, count)
-        pyplot.imshow(np.abs(f_prop_shift), norm=colors.LogNorm(vmin=np.mean(np.abs(f_prop_shift))))
-        pyplot.title("Large-Magnitude Frequencies")
+        ax2 = pyplot.subplot(num_rows, num_cols, count)
+        ax2.margins(-0.49)
+        ax2.set_title("Large-Magnitude Frequencies")
+        ax2.imshow(np.abs(f_prop_shift), norm=colors.LogNorm(vmin=np.mean(np.abs(f_prop_shift))))
         count += 1
 
         f_prop = ifftshift(f_prop_shift)
         high_prop = np.real(ifft2(f_prop))
 
-        pyplot.subplot(num_rows, num_cols, count)
-        pyplot.title(props[k])
-        pyplot.imshow(high_prop)
+        ax3 = pyplot.subplot(num_rows, num_cols, count)
+        ax3.margins(-0.49)
+        ax3.set_title(props[k])
+        ax3.imshow(high_prop)
         count += 1
 
         new_data[:, :, k] = high_prop

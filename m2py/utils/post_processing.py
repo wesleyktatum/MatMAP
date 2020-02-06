@@ -59,7 +59,7 @@ def show_classification(labels, data, data_type, input_cmap="jet"):
     num_cols = 2 * NUM_COLS
     num_rows = int(np.ceil(num_plots / num_cols))
 
-    fig = pyplot.figure(figsize=(20, 14), dpi=80, facecolor="w", edgecolor="k")
+    fig = pyplot.figure(figsize=(16, 16), dpi=80, facecolor="w", edgecolor="k")
     cnt = 1
     cmap = pyplot.get_cmap(input_cmap, num_labels)
     for i in range(c):
@@ -217,7 +217,7 @@ def show_distributions_together(labels, data, data_type, input_cmap):
     num_cols = 2 * NUM_COLS
     num_rows = int(np.ceil(num_plots / num_cols))
 
-    fig = pyplot.figure(figsize=(20, 15), dpi=80, facecolor="w", edgecolor="k")
+    fig = pyplot.figure(figsize=(20, 18), dpi=80, facecolor="w", edgecolor="k")
     cnt = 1
     cmap = pyplot.get_cmap(input_cmap, num_labels)
     for i in range(c):
@@ -313,7 +313,7 @@ def show_classification_correlation(labels, data, data_type, title_flag=True, sa
     num_cols = 2 * NUM_COLS
     num_rows = int(np.ceil(num_plots / num_cols))
 
-    fig = pyplot.figure(figsize=(20, 15), dpi=80, facecolor="w", edgecolor="k")
+    fig = pyplot.figure(figsize=(20, 18), dpi=80, facecolor="w", edgecolor="k")
     cmap = pyplot.get_cmap("jet", num_labels)
     cnt = 1
     for index_i, i in enumerate(range(c)):

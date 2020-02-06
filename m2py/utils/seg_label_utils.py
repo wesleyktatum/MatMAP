@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+from skimage import measure
 import scipy.stats as stats
 import matplotlib.pyplot as plt
 
@@ -11,10 +13,10 @@ descriptive statistics are dynamically sorted into dictionaries of lists
 and arrays so that they may be iterably accessed and analyzed.
 """
 
-LABEL_THRESH = 100  # each label must have more than this number of pixels
+LABEL_THRESH = 1000  # each label must have more than this number of pixels
 BG_THRESH = 100000 # NOTE 10k for smaller grains and 100k for bigger grains
 
-data_channels = config.data_info["QNM"]["properties"]
+# data_channels = config.data_info["QNM"]["properties"]
 
 def relabel(labels):
     """
@@ -538,3 +540,164 @@ def gen_grain_stats(grain_props):
                 grain_stats[k][i] = array_stats(grain[:, i])
 
     return grain_stats
+
+def resize_boundaries(grain):
+    
+    x,y = grain.shape
+    left_edge = y
+    right_edge = 0
+    top_edge = x
+    bottom_edge = 0
+    
+    for i in range(x):
+        for j in range(y):
+            if grain[i,j] == True:
+                if j < left_edge:
+                    left_edge = j
+                elif j > right_edge:
+                    right_edge = j
+                else:
+                    pass
+
+                if i < top_edge:
+                    top_edge = i
+                elif i > bottom_edge:
+                    bottom_edge = i
+                else:
+                    pass
+
+            else:
+                pass
+            
+    if left_edge == 0:
+        left_edge = 1
+    else:
+        pass
+    if right_edge == y:
+        right_edge = y-1
+    else:
+        pass
+    if top_edge == 0:
+        top_edge = 1
+    else:
+        pass
+    if bottom_edge == x:
+        bottom_edge = x-1
+    else:
+        pass
+            
+#     print (left_edge, right_edge, top_edge, bottom_edge)
+
+    return np.asarray(grain[(top_edge-1):(bottom_edge+2), (left_edge-1):(right_edge+2)])
+
+def all_domain_properties(phase_labels, domain_labels):
+    
+    all_props = {}
+    
+    domain_count = int(domain_labels.max())
+    
+    for i in range(1, domain_count+1):
+#         print (i)
+    
+        domain = np.asarray([label for label in domain_labels == i])
+        #convert bool to int
+        domain = domain.astype(int)
+
+        #Check phase of pixels in the domain
+        phase = phase_labels[domain == 1]
+        phase_mode, count = stats.mode(phase, axis = None)
+
+        resized_domain = resize_boundaries(domain)
+        props_table = measure.regionprops_table(resized_domain, properties = ['label', 'major_axis_length','minor_axis_length',
+                                                                             'eccentricity', 'orientation', 'perimeter'])
+        props_table['label'] = phase_mode[0]
+
+        #Pass domain stats to proper phase's k:v pair
+        all_props[i] = (props_table)
+
+    props_df = pd.DataFrame.from_dict(all_props, orient = 'index')
+    
+    return props_df
+
+def plot_descriptors_by_phase(descriptor_dict):
+
+    fig = plt.figure(figsize = (12,8))
+
+    ax = fig.add_subplot(2,3,1)
+    plt.scatter(descriptor_dict['label'], descriptor_dict['major_axis_length'])
+    ax.set_title('major_axis_length')
+
+    ax = fig.add_subplot(2,3,2)
+    plt.scatter(descriptor_dict['label'], descriptor_dict['minor_axis_length'])
+    ax.set_title('minor_axis_length')
+
+    ax = fig.add_subplot(2,3,3)
+    plt.scatter(descriptor_dict['label'], descriptor_dict['perimeter'])
+    ax.set_title('perimeter')
+
+    ax = fig.add_subplot(2,3,4)
+    plt.scatter(descriptor_dict['label'], descriptor_dict['orientation'])
+    ax.set_title('orientation')
+
+    ax = fig.add_subplot(2,3,5)
+    plt.scatter(descriptor_dict['label'], descriptor_dict['eccentricity'])
+    ax.set_title('eccentricity')
+
+    plt.tight_layout()
+    plt.show()
+    
+def plot_descriptors_by_domain(descriptor_dict):
+
+    fig = plt.figure(figsize = (12,8))
+
+    ax = fig.add_subplot(2,3,1)
+    plt.scatter(descriptor_dict.index, descriptor_dict['major_axis_length'])
+    ax.set_title('major_axis_length')
+
+    ax = fig.add_subplot(2,3,2)
+    plt.scatter(descriptor_dict.index, descriptor_dict['minor_axis_length'])
+    ax.set_title('minor_axis_length')
+
+    ax = fig.add_subplot(2,3,3)
+    plt.scatter(descriptor_dict.index, descriptor_dict['perimeter'])
+    ax.set_title('perimeter')
+
+    ax = fig.add_subplot(2,3,4)
+    plt.scatter(descriptor_dict.index, descriptor_dict['orientation'])
+    ax.set_title('orientation')
+
+    ax = fig.add_subplot(2,3,5)
+    plt.scatter(descriptor_dict.index, descriptor_dict['eccentricity'])
+    ax.set_title('eccentricity')
+
+    plt.tight_layout()
+    plt.show()
+    
+def all_domain_properties(phase_labels, domain_labels):
+    
+    all_props = {}
+    
+    domain_count = int(domain_labels.max())
+    
+    for i in range(2, domain_count+1):
+#         print (i)
+    
+        domain = np.asarray([label for label in domain_labels == i])
+        #convert bool to int
+        domain = domain.astype(int)
+
+        #Check phase of pixels in the domain
+        phase = phase_labels[domain == 1]
+        phase_mode, count = stats.mode(phase, axis = None)
+
+        resized_domain = resize_boundaries(domain)
+        props_table = measure.regionprops_table(resized_domain, properties = ['label', 'major_axis_length','minor_axis_length',
+                                                                             'eccentricity', 'orientation', 'perimeter'])
+        props_table['label'] = phase_mode[0]
+
+        #Pass domain stats to proper phase's k:v pair
+        all_props[i] = (props_table)
+
+    props_df = pd.DataFrame.from_dict(all_props, orient = 'index')
+    
+    return props_df
