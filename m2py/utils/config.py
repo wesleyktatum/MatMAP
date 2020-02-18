@@ -15,6 +15,7 @@ data_info{
 """
 
 data_info = {
+<<<<<<< HEAD
     "QNM": {
         "properties": ["Adhesion", "Deformation", "Dissipation", "LogDMT", "Height", "Stiffness"],
         "sample_size": {"Backgrounded": 2, "2ComponentFilms": 0.5, "Nanowires": 5},
@@ -26,3 +27,34 @@ data_info = {
         "sample_size": {"NA": 1},
     },
 }
+=======
+        "Full_QNM": {
+            "properties": ["Z-scale", "Height", "Peak Force Error", "Stiffness", "LogDMT", "Adhesion", "Deformation", "Dissipation"],
+            "sample_size": {
+                "P3HT:PCBM_OPV": 0.5,
+                "P3HT_OFET": 0.5
+                }
+            },
+        "QNM": {
+            "properties": ["Adhesion", "Deformation", "Dissipation", "LogDMT", "Height", "Stiffness"],
+            "sample_size": {
+                "Backgrounded": 2,
+                "2ComponentFilms": 0.5,
+                "Nanowires": 5
+                }
+            },
+        "AMFM": {
+            "properties": ["Height", "Deformation", "Youngs Modulus", "Phase"],
+            "sample_size": {
+                "Nanowires": 2
+                }
+            },
+        "cAFM": {
+            "properties": ["Current", "Height"],
+            "sample_size": {
+                "Nanowires": 2
+                }
+            }
+        }
+
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245

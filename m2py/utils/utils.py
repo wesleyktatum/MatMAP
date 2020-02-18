@@ -4,7 +4,10 @@ import numpy as np
 def generate_chips_from_data(data, chip_size, stride):
     """
     Finds outliers from data
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Parameters
     ----------
         data : NumPy Array
@@ -13,7 +16,10 @@ def generate_chips_from_data(data, chip_size, stride):
             size of generated chips
         stride: int
             number of pixels skipped over to generate adjacent chips
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Returns
     ----------
         chips : dict
@@ -69,7 +75,10 @@ def generate_chips_from_data(data, chip_size, stride):
 def reshape_image(image, image_height, image_width, num_channels, len_shape):
     """
     Reshape image into input dimensions
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Parameters
     ----------
         image : NumPy array
@@ -82,7 +91,10 @@ def reshape_image(image, image_height, image_width, num_channels, len_shape):
             number of channels in image
         len_shape : int
             number of axes in input image
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Returns
     ----------
         image : NumPy array
@@ -99,12 +111,18 @@ def reshape_image(image, image_height, image_width, num_channels, len_shape):
 def get_stride_from_chips(chips):
     """
     Stitch up chips into a full array
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Parameters
     ----------
         chips : dict
             dictionary of partition indices mapping to actual chips
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Returns
     ----------
         stride: int
@@ -126,12 +144,18 @@ def get_stride_from_chips(chips):
 def stitch_up_chips(chips):
     """
     Stitch up chips into a full array
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Parameters
     ----------
         chips : dict
             dictionary of partition indices mapping to actual chips
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Returns
     ----------
         full_image: NumPy Array
@@ -156,4 +180,8 @@ def stitch_up_chips(chips):
     full_image = full_image.astype("int64")
     full_image = reshape_image(full_image, full_image_size, full_image_size, num_channels, len_shape)
 
+<<<<<<< HEAD
     return full_image
+=======
+    return full_image
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245

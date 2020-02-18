@@ -21,9 +21,12 @@ def store_results(labels, output_file):
     """
     Store results.
 
-    Args:
-        labels (NumPy Array): matrix of classification per pixel
-        output_file (str): output file for results
+    Parameters
+    ----------
+    labels : NumPy Array
+        matrix of classification per pixel
+    output_file : str
+        output file for results
     """
     np.save(output_file, labels)
 
@@ -34,6 +37,7 @@ def show_classification(labels, data, data_type, input_cmap="jet"):
 
     Parameters
     ----------
+<<<<<<< HEAD
         labels : NumPy Array
             matrix of classification per pixel
         data : NumPy Array
@@ -43,6 +47,17 @@ def show_classification(labels, data, data_type, input_cmap="jet"):
         input_cmap : str
             string designating matplotlib colormap to use
 
+=======
+    labels : NumPy Array
+        matrix of classification per pixel
+    data : NumPy Array
+        matrix containing user entered SPM data
+    data_type : str
+        string designating data type (QNM, AMFM, cAFM)
+    input_cmap : str
+        string designating matplotlib colormap to use
+        
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Returns
     ----------
     """
@@ -56,7 +71,7 @@ def show_classification(labels, data, data_type, input_cmap="jet"):
     num_cols = 2 * NUM_COLS
     num_rows = int(np.ceil(num_plots / num_cols))
 
-    fig = pyplot.figure(figsize=(20, 14), dpi=80, facecolor="w", edgecolor="k")
+    fig = pyplot.figure(figsize=(16, 16), dpi=80, facecolor="w", edgecolor="k")
     cnt = 1
     cmap = pyplot.get_cmap(input_cmap, num_labels)
     for i in range(c):
@@ -83,6 +98,7 @@ def show_classification_distributions(labels, data, outliers, data_type, title_f
 
     Parameters
     ----------
+<<<<<<< HEAD
         labels : NumPy Array
             matrix of classification per pixel
         data : NumPy Array
@@ -94,6 +110,17 @@ def show_classification_distributions(labels, data, outliers, data_type, title_f
         title_flag : bool
             flag for plots to show titles or not
 
+=======
+    labels : NumPy Array
+        matrix of classification per pixel
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    title_flag : bool
+        flag for plots to show titles or not
+            
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Returns
     ----------
     """
@@ -144,12 +171,12 @@ def show_grain_area_distribution(labels, data_type, data_subtype):
 
     Parameters
     ----------
-        labels : NumPy Array
-            matrix of classification per pixel
-        data : NumPy Array
-            SPM data supplied by the user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    labels : NumPy Array
+        matrix of classification per pixel
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
 
     Returns
     ----------
@@ -197,14 +224,14 @@ def show_distributions_together(labels, data, data_type, input_cmap):
     
     Parameters
     ----------
-        labels : NumPy Array
-            matrix of classification per pixel
-        data : NumPy Array
-            SPM data supplied by the user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        input_cmap : str
-            specifies which color map to use
+    labels : NumPy Array
+        matrix of classification per pixel
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    input_cmap : str
+        specifies which color map to use
             
     Returns
     ----------
@@ -220,7 +247,7 @@ def show_distributions_together(labels, data, data_type, input_cmap):
     num_cols = 2 * NUM_COLS
     num_rows = int(np.ceil(num_plots / num_cols))
 
-    fig = pyplot.figure(figsize=(20, 15), dpi=80, facecolor="w", edgecolor="k")
+    fig = pyplot.figure(figsize=(20, 18), dpi=80, facecolor="w", edgecolor="k")
     cnt = 1
     cmap = pyplot.get_cmap(input_cmap, num_labels)
     for i in range(c):
@@ -247,14 +274,14 @@ def show_overlaid_distribution(probs, data, data_type, outliers=None):
     Plots distributions overlaid on pixels
     Parameters
     ----------
-        probs : NumPy Array
-            array of probabilities per pixel
-        data : NumPy Array
-            SPM data supplied by the user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        outliers : NumPy Array
-            array of outlier pixels
+    probs : NumPy Array
+        array of probabilities per pixel
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    outliers : NumPy Array
+        array of outlier pixels
 
     Returns
     ----------
@@ -295,6 +322,7 @@ def show_classification_correlation(labels, data, data_type, title_flag=True, sa
     
     Parameters
     ----------
+<<<<<<< HEAD
         data : NumPy Array
             SPM data supplied by the user
         data_type : str
@@ -304,6 +332,15 @@ def show_classification_correlation(labels, data, data_type, title_flag=True, sa
         sample_flag : bool
             flag to sample points for visualization
 
+=======
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    outliers : NumPy Array
+        boolean, 2D array of outlier flags (1's) for functions to pass over
+    
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Returns
     ----------
     
@@ -318,7 +355,7 @@ def show_classification_correlation(labels, data, data_type, title_flag=True, sa
     num_cols = 2 * NUM_COLS
     num_rows = int(np.ceil(num_plots / num_cols))
 
-    fig = pyplot.figure(figsize=(20, 15), dpi=80, facecolor="w", edgecolor="k")
+    fig = pyplot.figure(figsize=(20, 18), dpi=80, facecolor="w", edgecolor="k")
     cmap = pyplot.get_cmap("jet", num_labels)
     cnt = 1
     for index_i, i in enumerate(range(c)):
@@ -368,10 +405,10 @@ def colorbar_index(ncolors, cmap):
 
     Parameters
     ----------
-        ncolors : int
-            number of colors.
-        cmap : str
-            colormap instance
+    ncolors : int
+        number of colors.
+    cmap : str
+        colormap instance
 
     Returns
     ----------
@@ -394,14 +431,14 @@ def cmap_discretize(cmap, N):
 
     Parameters
     ----------
-        cmap : str
-            colormap instance.
-        N : int
-            number of colors.
+    cmap : str
+        colormap instance.
+    N : int
+        number of colors.
             
     Returns
     ----------
-        discretized version of continuous colormap
+    discretized version of continuous colormap
     """
     colors_i = np.concatenate((np.linspace(0, 1.0, N), (0.0, 0.0, 0.0, 0.0)))
     colors_rgba = cmap(colors_i)

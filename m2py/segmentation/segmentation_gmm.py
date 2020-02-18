@@ -253,6 +253,6 @@ class SegmenterGMM(object):
     @staticmethod
     def get_grains(labels):
         """ Segments classes labels into grain labels """
-        new_labels = measure.label(labels, connectivity=2, background=0)
+        new_labels = measure.label(labels, connectivity=1, background=0)
         new_labels = slu.relabel(new_labels)
         return new_labels

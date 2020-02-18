@@ -1,10 +1,14 @@
 import os
+import sys
 
 import numpy as np
 from scipy import signal
 from matplotlib import pyplot, colors
 from scipy.fftpack import fft2, ifft2, fftshift, ifftshift
 
+module_path = os.path.abspath(os.path.join('../'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
 from m2py.utils import config
 from m2py.utils import utils
 
@@ -25,12 +29,12 @@ def show_property_distributions(data, data_type, outliers=None):
 
     Parameters
     ----------
-        data : NumPy Array
-            matrix of SPM data supplied by user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        outliers : NumPy Array
-            boolean, 2D array of outlier flags (1's) for functions to pass over
+    data : NumPy Array
+        matrix of SPM data supplied by user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    outliers : NumPy Array
+        boolean, 2D array of outlier flags (1's) for functions to pass over
     
     Returns
     ----------
@@ -43,7 +47,7 @@ def show_property_distributions(data, data_type, outliers=None):
     num_cols = NUM_COLS
     num_rows = int(np.ceil(num_plots / num_cols))
 
-    fig = pyplot.figure(figsize=(10, 15), dpi=80, facecolor="w", edgecolor="k")
+    fig = pyplot.figure(figsize=(12, 18), dpi=80, facecolor="w", edgecolor="k")
     for j in range(c):
         if outliers is not None:
             x = [data[n, m, j] for n in range(h) for m in range(w) if not outliers[n, m]]
@@ -65,13 +69,13 @@ def get_correlations(path):
     
     Parameters
     ----------
-        path : str
-            data directory
+    path : str
+        data directory
     
     Returns
     ----------
-        cors :list
-            correlation between all pairs of properties per file
+    cors :list
+        correlation between all pairs of properties per file
     """
     files = os.listdir(path)
     N = len(files)
@@ -97,16 +101,17 @@ def get_correlation_values(cors, r, c):
     
     Parameters
     ----------
-        cors : list
-            propertiess correlations per file
-        r : int
-            first property index
-        c : int
-            second property index
+    cors : list
+        propertiess correlations per file
+    r : int
+        first property index
+    c : int
+        second property index
             
     Returns
     ----------
-        rc_cors (list): correlation between properties r and c per file
+    rc_cors : list
+        correlation between properties r and c per file
     """
     rc_cors = [cor[r, c] for cor in cors]
     return rc_cors
@@ -118,12 +123,12 @@ def show_correlations(num_props, data_type, path):
     
     Parameters
     ----------
-        num_props : int
-            number of properties
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        path : str
-            data directory
+    num_props : int
+        number of properties
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    path : str
+        data directory
         
     Returns
     ----------
@@ -168,7 +173,6 @@ def show_correlations(num_props, data_type, path):
 def extract_outliers(data, data_type, prop, threshold=2.5, chip_size=512, stride=512):
     """
     Finds outliers from data
-
     Parameters
     ----------
         data : NumPy Array
@@ -183,7 +187,10 @@ def extract_outliers(data, data_type, prop, threshold=2.5, chip_size=512, stride
             size of generated chips
         stride: int
             number of pixels skipped over to generate adjacent chips
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Returns
     ----------
         outliers : NumPy Array
@@ -199,6 +206,7 @@ def extract_outliers(data, data_type, prop, threshold=2.5, chip_size=512, stride
     prop_data = data[:, :, prop_index]
     prop_chips = utils.generate_chips_from_data(prop_data, chip_size, stride)
     outlier_chips = {}
+<<<<<<< HEAD
 
     for key, chip in prop_chips.items():
         temp_outliers = apply_outlier_extraction(chip, threshold)
@@ -219,6 +227,26 @@ def apply_outlier_extraction(prop_data, threshold=2.5):
         threshold : float
             z-score threshold at which to flag a pixel as an outlier
 
+=======
+
+    for key, chip in prop_chips.items():
+        temp_outliers = apply_outlier_extraction(chip, threshold)
+        outlier_chips[key] = temp_outliers
+
+    outliers = utils.stitch_up_chips(outlier_chips)
+    return outliers
+
+
+def apply_outlier_extraction(prop_data, threshold=2.5):
+    """
+    Apply outlier extraction routine to single channel data array.
+    Parameters
+    ----------
+        data : NumPy Array
+            SPM data (for a single property) supplied by the user
+        threshold : float
+            z-score threshold at which to flag a pixel as an outlier
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Returns
     ----------
         outliers : NumPy Array
@@ -364,17 +392,17 @@ def apply_frequency_removal(data, data_type, compression_percent=95):
     
     Parameters
     ----------
-        data : NumPy Array
-            SPM data supplied by the user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        compression_percent : float
-            percentage of compression
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    compression_percent : float
+        percentage of compression
             
     Returns
     ----------
-        new_data : NumPy Array
-            compressed data
+    new_data : NumPy Array
+        compressed data
     """
 
     def remove_small_magnitude_freqs(f_prop_shift, h, w, compression_percent):
@@ -383,19 +411,19 @@ def apply_frequency_removal(data, data_type, compression_percent=95):
         
         Parameters
         ----------
-            f_prop_shift : NumPy Array
-                frequencies
-            h : int
-                height of data array
-            w : int
-                width of data array
-            compression_percent : float
-                percentage of compression
+        f_prop_shift : NumPy Array
+            frequencies
+        h : int
+            height of data array
+        w : int
+            width of data array
+        compression_percent : float
+            percentage of compression
             
         Returns
         ----------
-            f_prop_shift : NumPy Array
-                high frequencies
+        f_prop_shift : NumPy Array
+            high frequencies
         """
         mags = np.abs(f_prop_shift)
         thresh = np.percentile(mags, compression_percent)
@@ -412,31 +440,38 @@ def apply_frequency_removal(data, data_type, compression_percent=95):
     num_cols = 3 * NUM_COLS
     num_rows = int(np.ceil(num_plots / num_cols))
 
+<<<<<<< HEAD
     fig = pyplot.figure(figsize=(15, 10), dpi=80, facecolor="w", edgecolor="k")
+=======
+    fig = pyplot.figure(figsize=(18, 12), dpi=80, facecolor="w", edgecolor="k")
+>>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     count = 1
     for k in range(c):
         prop = data[:, :, k]
 
-        pyplot.subplot(num_rows, num_cols, count)
-        pyplot.title(props[k])
-        pyplot.imshow(prop)
+        ax1 = pyplot.subplot(num_rows, num_cols, count)
+        ax1.margins(-0.49)
+        ax1.set_title(props[k])
+        ax1.imshow(prop)
         count += 1
 
         f_prop = fft2(prop)
         f_prop_shift = fftshift(f_prop)
         f_prop_shift = remove_small_magnitude_freqs(f_prop_shift, h, w, compression_percent)
 
-        pyplot.subplot(num_rows, num_cols, count)
-        pyplot.imshow(np.abs(f_prop_shift), norm=colors.LogNorm(vmin=np.mean(np.abs(f_prop_shift))))
-        pyplot.title("Large-Magnitude Frequencies")
+        ax2 = pyplot.subplot(num_rows, num_cols, count)
+        ax2.margins(-0.49)
+        ax2.set_title("Large-Magnitude Frequencies")
+        ax2.imshow(np.abs(f_prop_shift), norm=colors.LogNorm(vmin=np.mean(np.abs(f_prop_shift))))
         count += 1
 
         f_prop = ifftshift(f_prop_shift)
         high_prop = np.real(ifft2(f_prop))
 
-        pyplot.subplot(num_rows, num_cols, count)
-        pyplot.title(props[k])
-        pyplot.imshow(high_prop)
+        ax3 = pyplot.subplot(num_rows, num_cols, count)
+        ax3.margins(-0.49)
+        ax3.set_title(props[k])
+        ax3.imshow(high_prop)
         count += 1
 
         new_data[:, :, k] = high_prop
