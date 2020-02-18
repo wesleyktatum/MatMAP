@@ -19,7 +19,8 @@ data_info = {
         "Full_QNM": {
             "properties": ["Z-scale", "Height", "Peak Force Error", "Stiffness", "LogDMT", "Adhesion", "Deformation", "Dissipation"],
             "sample_size": {
-                "P3HT:PCBM_OPV": 0.5
+                "P3HT:PCBM_OPV": 0.5,
+                "P3HT_OFET": 0.5
                 }
             },
         "QNM": {

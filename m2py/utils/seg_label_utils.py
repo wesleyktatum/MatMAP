@@ -4,7 +4,7 @@ from skimage import measure
 import scipy.stats as stats
 import matplotlib.pyplot as plt
 
-from m2py.utils import config
+#from m2py.utils import config
 
 """
 This module contains functions for sorting and grouping labels resulting
@@ -13,8 +13,8 @@ descriptive statistics are dynamically sorted into dictionaries of lists
 and arrays so that they may be iterably accessed and analyzed.
 """
 
-LABEL_THRESH = 1000  # each label must have more than this number of pixels
-BG_THRESH = 100000 # NOTE 10k for smaller grains and 100k for bigger grains
+LABEL_THRESH = 5  # each label must have more than this number of pixels
+BG_THRESH = 10000 # NOTE 10k for smaller grains and 100k for bigger grains
 
 # data_channels = config.data_info["QNM"]["properties"]
 

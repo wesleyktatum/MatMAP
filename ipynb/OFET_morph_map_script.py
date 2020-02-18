@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Feb 12 10:18:23 2020
+
+@author: root
+"""
+
 import os
 import sys
 #from decimal import Decimal
@@ -19,8 +27,8 @@ from m2py.utils import seg_label_utils as slu
 from m2py.segmentation import segmentation_gmm as seg_gmm
 from m2py.segmentation import segmentation_watershed as seg_water
 
-opv_file_path = '/Volumes/Tatum_SSD-1/Grad_School/m2py/OPV_AFM/combined_npy_new/'
-opv_morph_map_file_path = '/Volumes/Tatum_SSD-1/Grad_School/m2py/Morpholgy_labels/opv_morph_maps/'
+opv_file_path = '/Volumes/Tatum_SSD-1/Grad_School/m2py/OFET_AFM/combined_npy_new/'
+opv_morph_map_file_path = '/Volumes/Tatum_SSD-1/Grad_School/m2py/Morpholgy_labels/OFET_morph_maps/'
 files = os.listdir(opv_file_path)
 
 
@@ -79,7 +87,7 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
     h, w, c = data.shape
     outliers = np.zeros((h, w))
     for prop in data_properties:
-        temp_outliers = pre.extract_outliers(data, data_type, prop, 2.5, h, w)
+        temp_outliers = pre.extract_outliers(data, data_type, prop, 2.5, int(h/2), int(w/2))
         pre.show_outliers(data, data_type, prop, temp_outliers)
     
         outliers = np.logical_or(outliers, temp_outliers)
@@ -103,9 +111,10 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
 
     if heightless == True:
         # Remove height property
+        zscale_id = data_properties.index("Z-scale")
         height_id = data_properties.index("Height")
         
-        no_height_data = np.delete(no_outliers_data, height_id, axis=2)
+        no_height_data = np.delete(no_outliers_data, [zscale_id, height_id], axis=2)
 
         seg1_labels = seg1.fit_transform(no_height_data, outliers)
         
@@ -116,9 +125,9 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
             seg1_labels = np.ma.masked_where(outliers == 1, seg1_labels)
 
         post.show_classification(seg1_labels, no_height_data, data_type)
-        post.show_classification_correlation(seg1_labels, no_height_data, data_type)
-        post.show_distributions_together(seg1_labels, no_height_data, data_type, input_cmap = 'jet')
-        post.show_grain_area_distribution(seg1_labels, data_type, data_subtype)
+#        post.show_classification_correlation(seg1_labels, no_height_data, data_type)
+#        post.show_distributions_together(seg1_labels, no_height_data, data_type, input_cmap = 'jet')
+#        post.show_grain_area_distribution(seg1_labels, data_type, data_subtype)
 
         # Overlay distributions on pixels
         probs = seg1.get_probabilities(no_height_data)
@@ -131,7 +140,7 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
             pca_components = pca_components.reshape(h, w, num_pca_components)
             post.show_classification_correlation(seg1_labels, pca_components, data_type, title_flag=False)
 
-            post.show_classification_distributions(seg1_labels, pca_components, data_type, title_flag=False)
+#            post.show_classification_distributions(seg1_labels, pca_components, data_type, title_flag=False)
 
         else:
             pass
@@ -140,31 +149,34 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
 ## Persistence Watershed Segmentation clustering
     
         if thresh != None:
+            
+            heightless_data_props = data_properties.copy()
+            heightless_data_props.remove("Height")
+            heightless_data_props.remove("Z-scale")
         
-            seg2 = seg_water.SegmenterWatershed()
-            height_id = data_properties.index("Height")
-            height_data = data[:, :, height_id]
+            watershed_id = heightless_data_props.index("Adhesion")
+            watershed_data = no_height_data[:, :, watershed_id]
             thresh = thresh
-
-            seg2_labels = seg2.fit_transform(height_data, outliers, thresh)
             
-                                                                        ## This is incorporates GMM labels into PWS
+            seg2 = seg_water.SegmenterWatershed()
+            seg2_labels = seg2.fit_transform(watershed_data, outliers, thresh)
             
-            seg2_labels[seg1_labels == 1] = np.max(seg1_labels) + 1 # map background label of gmm to next pws label
-            for l in np.unique(seg2_labels): # clean up small pws labels
-                if np.sum(seg2_labels == l) < 100:
-                    seg2_labels = slu.fill_out_zeros(seg2_labels, seg2_labels == l)
-
-            seg2_labels = slu.get_significant_labels(seg2_labels, bg_contrast_flag=True)
-            post.show_classification(seg2_labels, no_height_data, data_type)
+            ## This is incorporates GMM labels into PWS
+#            seg2_labels[seg1_labels == 1] = np.max(seg1_labels) + 1 # map background label of gmm to next pws label
+#            for l in np.unique(seg2_labels): # clean up small pws labels
+#                if np.sum(seg2_labels == l) < 2:
+#                    seg2_labels = slu.fill_out_zeros(seg2_labels, seg2_labels == l)
+#
+#            seg2_labels = slu.get_significant_labels(seg2_labels, bg_contrast_flag=False)
+#            post.show_classification(seg2_labels, no_height_data, data_type)
 
 ## Conected-components clustering
         else:
             post_labels = seg1.get_grains(seg1_labels)
-            seg2_labels = slu.get_significant_labels(post_labels, bg_contrast_flag=True)
+            seg2_labels = slu.get_significant_labels(post_labels, bg_contrast_flag=False)
 
         post.show_classification(seg2_labels, no_height_data, data_type, input_cmap = input_cmap)
-        post.show_grain_area_distribution(seg2_labels, data_type, data_subtype)
+#        post.show_grain_area_distribution(seg2_labels, data_type, data_subtype)
 
 ######################################## Heightless == False ##########################################
         
@@ -250,17 +262,17 @@ print ("ims has",len(ims), "items")
 
 # Global parameters for OPV workflow. Includes all variables from above defined function, except 'dataframe = im'
 
-n_components = 3
-heightless = False
-outlier_threshold = 2.5
-padding = 0
-embedding_dim = 4
-thresh = None     ## Persistence Watershed Threshold
+n_components = 2
+heightless = True
+outlier_threshold = 2.25
+padding = 1
+embedding_dim = 3
+thresh = 0.003     ## Persistence Watershed Threshold
 nonlinear = True
 normalize = True
 zscale = False
 data_type = 'Full_QNM'
-data_subtype = 'P3HT:PCBM_OPV'
+data_subtype = 'P3HT_OFET'
 input_cmap = 'jet'
 
 
