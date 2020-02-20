@@ -1,9 +1,9 @@
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from matplotlib import pyplot, colors, cm
 
 from m2py.utils import config
-from m2py.utils import pre_processing
+#from m2py.utils import pre_processing
 from m2py.utils import seg_label_utils as slu
 
 INFO = config.data_info
@@ -37,17 +37,6 @@ def show_classification(labels, data, data_type, input_cmap="jet"):
 
     Parameters
     ----------
-<<<<<<< HEAD
-        labels : NumPy Array
-            matrix of classification per pixel
-        data : NumPy Array
-            matrix containing user entered SPM data
-        data_type : str
-            string designating data type (QNM, AMFM, cAFM)
-        input_cmap : str
-            string designating matplotlib colormap to use
-
-=======
     labels : NumPy Array
         matrix of classification per pixel
     data : NumPy Array
@@ -56,8 +45,7 @@ def show_classification(labels, data, data_type, input_cmap="jet"):
         string designating data type (QNM, AMFM, cAFM)
     input_cmap : str
         string designating matplotlib colormap to use
-        
->>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
+
     Returns
     ----------
     """
@@ -98,19 +86,6 @@ def show_classification_distributions(labels, data, outliers, data_type, title_f
 
     Parameters
     ----------
-<<<<<<< HEAD
-        labels : NumPy Array
-            matrix of classification per pixel
-        data : NumPy Array
-            SPM data supplied by the user
-        outliers : NumPy Array
-            array of outlier pixels
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        title_flag : bool
-            flag for plots to show titles or not
-
-=======
     labels : NumPy Array
         matrix of classification per pixel
     data : NumPy Array
@@ -119,8 +94,7 @@ def show_classification_distributions(labels, data, outliers, data_type, title_f
         data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
     title_flag : bool
         flag for plots to show titles or not
-            
->>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
+
     Returns
     ----------
     """
@@ -322,17 +296,14 @@ def show_classification_correlation(labels, data, data_type, title_flag=True, sa
     
     Parameters
     ----------
-<<<<<<< HEAD
-        data : NumPy Array
-            SPM data supplied by the user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        title_flag : bool
-            flag for plots to show titles or not
-        sample_flag : bool
-            flag to sample points for visualization
-
-=======
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    title_flag : bool
+        flag for plots to show titles or not
+    sample_flag : bool
+        flag to sample points for visualization
     data : NumPy Array
         SPM data supplied by the user
     data_type : str
@@ -340,7 +311,6 @@ def show_classification_correlation(labels, data, data_type, title_flag=True, sa
     outliers : NumPy Array
         boolean, 2D array of outlier flags (1's) for functions to pass over
     
->>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Returns
     ----------
     

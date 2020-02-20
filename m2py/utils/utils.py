@@ -4,26 +4,20 @@ import numpy as np
 def generate_chips_from_data(data, chip_size, stride):
     """
     Finds outliers from data
-<<<<<<< HEAD
 
-=======
->>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Parameters
     ----------
-        data : NumPy Array
-            SPM data supplied by the user
-        chip_size : int
-            size of generated chips
-        stride: int
-            number of pixels skipped over to generate adjacent chips
-<<<<<<< HEAD
+    data : NumPy Array
+        SPM data supplied by the user
+    chip_size : int
+        size of generated chips
+    stride: int
+        number of pixels skipped over to generate adjacent chips
 
-=======
->>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Returns
     ----------
-        chips : dict
-            dictionary of partition indices mapping to actual chips
+    chips : dict
+        dictionary of partition indices mapping to actual chips
     """
     len_shape = len(data.shape)
     if len_shape == 2:
@@ -75,30 +69,24 @@ def generate_chips_from_data(data, chip_size, stride):
 def reshape_image(image, image_height, image_width, num_channels, len_shape):
     """
     Reshape image into input dimensions
-<<<<<<< HEAD
 
-=======
->>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Parameters
     ----------
-        image : NumPy array
-            image to reshape
-        image_height : int
-            image height
-        image_width : int
-            image width
-        num_channels : int
-            number of channels in image
-        len_shape : int
-            number of axes in input image
-<<<<<<< HEAD
+    image : NumPy array
+        image to reshape
+    image_height : int
+        image height
+    image_width : int
+        image width
+    num_channels : int
+        number of channels in image
+    len_shape : int
+        number of axes in input image
 
-=======
->>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Returns
     ----------
-        image : NumPy array
-            reshaped image
+    image : NumPy array
+        reshaped image
     """
     if len_shape == 3:
         image = image.reshape(image_height, image_width, num_channels)
@@ -111,22 +99,16 @@ def reshape_image(image, image_height, image_width, num_channels, len_shape):
 def get_stride_from_chips(chips):
     """
     Stitch up chips into a full array
-<<<<<<< HEAD
 
-=======
->>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Parameters
     ----------
-        chips : dict
-            dictionary of partition indices mapping to actual chips
-<<<<<<< HEAD
+    chips : dict
+        dictionary of partition indices mapping to actual chips
 
-=======
->>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Returns
     ----------
-        stride: int
-            number of pixels skipped over to generate adjacent chips
+    stride: int
+        number of pixels skipped over to generate adjacent chips
     """
     keys = list(chips.keys())
     sorted_keys = sorted(keys)
@@ -144,22 +126,16 @@ def get_stride_from_chips(chips):
 def stitch_up_chips(chips):
     """
     Stitch up chips into a full array
-<<<<<<< HEAD
 
-=======
->>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Parameters
     ----------
-        chips : dict
-            dictionary of partition indices mapping to actual chips
-<<<<<<< HEAD
+    chips : dict
+        dictionary of partition indices mapping to actual chips
 
-=======
->>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
     Returns
     ----------
-        full_image: NumPy Array
-            stitched up image made up of chips
+    full_image: NumPy Array
+        stitched up image made up of chips
     """
     stride = get_stride_from_chips(chips)
 
@@ -180,8 +156,4 @@ def stitch_up_chips(chips):
     full_image = full_image.astype("int64")
     full_image = reshape_image(full_image, full_image_size, full_image_size, num_channels, len_shape)
 
-<<<<<<< HEAD
     return full_image
-=======
-    return full_image
->>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245

@@ -175,26 +175,22 @@ def extract_outliers(data, data_type, prop, threshold=2.5, chip_size=512, stride
     Finds outliers from data
     Parameters
     ----------
-        data : NumPy Array
-            SPM data supplied by the user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        prop : str
-            data property to be used for outlier detection
-        threshold : float
-            z-score threshold at which to flag a pixel as an outlier
-        chip_size : int
-            size of generated chips
-        stride: int
-            number of pixels skipped over to generate adjacent chips
-<<<<<<< HEAD
-
-=======
->>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    prop : str
+        data property to be used for outlier detection
+    threshold : float
+        z-score threshold at which to flag a pixel as an outlier
+    chip_size : int
+        size of generated chips
+    stride: int
+        number of pixels skipped over to generate adjacent chips
     Returns
     ----------
-        outliers : NumPy Array
-            boolean, 2D array of outlier flags (1's) for functions to pass over
+    outliers : NumPy Array
+        boolean, 2D array of outlier flags (1's) for functions to pass over
     """
     props = INFO[data_type]["properties"]
     if prop in props:
@@ -206,28 +202,6 @@ def extract_outliers(data, data_type, prop, threshold=2.5, chip_size=512, stride
     prop_data = data[:, :, prop_index]
     prop_chips = utils.generate_chips_from_data(prop_data, chip_size, stride)
     outlier_chips = {}
-<<<<<<< HEAD
-
-    for key, chip in prop_chips.items():
-        temp_outliers = apply_outlier_extraction(chip, threshold)
-        outlier_chips[key] = temp_outliers
-
-    outliers = utils.stitch_up_chips(outlier_chips)
-    return outliers
-
-
-def apply_outlier_extraction(prop_data, threshold=2.5):
-    """
-    Apply outlier extraction routine to single channel data array.
-
-    Parameters
-    ----------
-        data : NumPy Array
-            SPM data (for a single property) supplied by the user
-        threshold : float
-            z-score threshold at which to flag a pixel as an outlier
-
-=======
 
     for key, chip in prop_chips.items():
         temp_outliers = apply_outlier_extraction(chip, threshold)
@@ -242,15 +216,14 @@ def apply_outlier_extraction(prop_data, threshold=2.5):
     Apply outlier extraction routine to single channel data array.
     Parameters
     ----------
-        data : NumPy Array
-            SPM data (for a single property) supplied by the user
-        threshold : float
-            z-score threshold at which to flag a pixel as an outlier
->>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
+    data : NumPy Array
+        SPM data (for a single property) supplied by the user
+    threshold : float
+        z-score threshold at which to flag a pixel as an outlier
     Returns
     ----------
-        outliers : NumPy Array
-            boolean, 2D array of outlier flags (1's) for functions to pass over
+    outliers : NumPy Array
+        boolean, 2D array of outlier flags (1's) for functions to pass over
     """
     # Smooth data
     flt = np.array([[0.5, 0.5, 0.5], [0.5, 1, 0.5], [0.5, 0.5, 0.5]])
@@ -273,14 +246,14 @@ def show_outliers(data, data_type, prop, outliers):
     
     Parameters
     ----------    
-        data : NumPy Array
-            SPM data supplied by the user
-        data_type : str
-            data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
-        prop : str
-            data property to be used for outlier extraction
-        outliers : NumPy Array
-            boolean, 2D array of outlier flags (1's) for functions to pass over
+    data : NumPy Array
+        SPM data supplied by the user
+    data_type : str
+        data type corresponding to config.data_info keyword (QNM, AMFM, cAFM)
+    prop : str
+        data property to be used for outlier extraction
+    outliers : NumPy Array
+        boolean, 2D array of outlier flags (1's) for functions to pass over
         
     Returns
     ----------
@@ -323,15 +296,15 @@ def smooth_outliers_from_data(data, outliers):
     
     Parameters
     ----------
-        data : NumPy Array
-            SPM data supplied by the user
-        outliers : NumPy Array
-            boolean, 2D array of outlier flags (1's) for functions to pass over
+    data : NumPy Array
+        SPM data supplied by the user
+    outliers : NumPy Array
+        boolean, 2D array of outlier flags (1's) for functions to pass over
             
     Returns
     ----------
-        no_outliers_data : NumPy Array
-            SPM data with outlier values replaced with the channel's mean value
+    no_outliers_data : NumPy Array
+        SPM data with outlier values replaced with the channel's mean value
     """
     h, w, c = data.shape
 
@@ -348,17 +321,17 @@ def remove_noisy_channels(data, data_properties):
     
     Parameters
     ----------
-        data : NumPy Array
-            SPM data supplied by the user
-        data_properties : dict
-            channel properties of the SPM data
+    data : NumPy Array
+        SPM data supplied by the user
+    data_properties : dict
+        channel properties of the SPM data
             
     Returns
     ----------
-        data : NumPy Array
-            SPM data supplied by the user
-        data_properties : dict
-            channel properties of the SPM data
+    data : NumPy Array
+        SPM data supplied by the user
+    data_properties : dict
+        channel properties of the SPM data
     """
     buckets = 100  # TODO optimize
 
@@ -440,11 +413,8 @@ def apply_frequency_removal(data, data_type, compression_percent=95):
     num_cols = 3 * NUM_COLS
     num_rows = int(np.ceil(num_plots / num_cols))
 
-<<<<<<< HEAD
     fig = pyplot.figure(figsize=(15, 10), dpi=80, facecolor="w", edgecolor="k")
-=======
-    fig = pyplot.figure(figsize=(18, 12), dpi=80, facecolor="w", edgecolor="k")
->>>>>>> 2da309550fb50bb5bee18cf10bc0f76b568e9245
+    
     count = 1
     for k in range(c):
         prop = data[:, :, k]

@@ -152,6 +152,7 @@ def fill_out_zeros(labels, zeros):
         matrix of classification per pixel
     zeros : NumPy Array
         zero values
+        
     Returns
     ----------
     labels : int
@@ -178,7 +179,7 @@ def get_significant_labels(labels, bg_contrast_flag=False, label_thresh=LABEL_TH
     ----------
     labels : NumPy Array
         matrix of classification per pixel
-     bg_contrast_flag : bool
+    bg_contrast_flag : bool
         highlights biggest grain (background) in plot
             
     Returns

@@ -82,7 +82,7 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
     data_properties = config.data_info[data_type]['properties']
 
     # Extract outliers
-#     outliers = pre.extract_outliers(data, data_type, prop = 'Z-scale', threshold = outlier_threshold, chip_size = 256, stride = 256)
+#     outliers = pre.extract_outliers(data, data_type, prop = 'Zscale', threshold = outlier_threshold, chip_size = 256, stride = 256)
     
     h, w, c = data.shape
     outliers = np.zeros((h, w))
@@ -111,7 +111,7 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
 
     if heightless == True:
         # Remove height property
-        zscale_id = data_properties.index("Z-scale")
+        zscale_id = data_properties.index("Zscale")
         height_id = data_properties.index("Height")
         
         no_height_data = np.delete(no_outliers_data, [zscale_id, height_id], axis=2)
@@ -150,26 +150,35 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
     
         if thresh != None:
             
-            heightless_data_props = data_properties.copy()
-            heightless_data_props.remove("Height")
-            heightless_data_props.remove("Z-scale")
-        
-            watershed_id = heightless_data_props.index("Adhesion")
-            watershed_data = no_height_data[:, :, watershed_id]
-            thresh = thresh
+            comp_labels = list(np.unique(seg1_labels))
+            if 0 in comp_labels: # Avoid outlier components / class
+                comp_labels.remove(0)
+            
+            watershed_id = data_properties.index("Adhesion")
             
             seg2 = seg_water.SegmenterWatershed()
-            seg2_labels = seg2.fit_transform(watershed_data, outliers, thresh)
+            thresh = thresh
             
-            ## This is incorporates GMM labels into PWS
-#            seg2_labels[seg1_labels == 1] = np.max(seg1_labels) + 1 # map background label of gmm to next pws label
-#            for l in np.unique(seg2_labels): # clean up small pws labels
-#                if np.sum(seg2_labels == l) < 2:
-#                    seg2_labels = slu.fill_out_zeros(seg2_labels, seg2_labels == l)
-#
-#            seg2_labels = slu.get_significant_labels(seg2_labels, bg_contrast_flag=False)
-#            post.show_classification(seg2_labels, no_height_data, data_type)
-
+            seg2_labels = np.zeros_like(data[:, :, 0], dtype=np.int64)
+            for l in comp_labels:
+                watershed_data = no_outliers_data[:, :, watershed_id] * (seg1_labels == l)    # Why the '*'? Can this be heightless??
+                temp_labels = seg2.fit_transform(watershed_data, outliers, pers_thresh=thresh)
+                temp_labels *= (seg1_labels == l)
+                
+                # NOTE: no need to fill out zeros in this case
+            
+                # Instance (grains) segmentation of properties
+                print(f"Watershed Segmentation of GMM component {l}")
+                post.show_classification(temp_labels, no_outliers_data, data_type)
+                
+                # Add results from different components
+                temp_labels += np.max(seg2_labels) # To distinguish labels from different components
+                seg2_labels += temp_labels
+                
+            # Instance (grains) segmentation of properties
+            print("Watershed Segmentation of combined GMM components")
+            post.show_classification(seg2_labels, no_outliers_data, data_type)
+                        
 ## Conected-components clustering
         else:
             post_labels = seg1.get_grains(seg1_labels)
@@ -221,27 +230,33 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
     
         if thresh != None:
         
-            seg2 = seg_water.SegmenterWatershed()           
-            height_id = data_properties.index("Height")
-            height_data = data[:, :, height_id]
+            comp_labels = list(np.unique(seg1_labels))
+            if 0 in comp_labels: # Avoid outlier components / class
+                comp_labels.remove(0)
+            
+            watershed_id = data_properties.index("Zscale")
+            
+            seg2 = seg_water.SegmenterWatershed()
             thresh = thresh
             
-            watershed_channel = no_outliers_data[:,:,0]
+            seg2_labels = np.zeros_like(data[:, :, 0], dtype=np.int64)
+            for l in comp_labels:
+                watershed_data = no_outliers_data[:, :, watershed_id] * (seg1_labels == l)    # Why the '*'? Can this be heightless??
+                temp_labels = seg2.fit_transform(watershed_data, outliers, pers_thresh=thresh)
+                temp_labels *= (seg1_labels == l)
+                
+                # NOTE: no need to fill out zeros in this case
             
-            plt.imshow(watershed_channel, cmap = 'gist_ncar')
-            plt.show()
-
-            seg2_labels = seg2.fit_transform(watershed_channel, outliers, thresh)
-            seg2_labels = np.ma.masked_where(seg2_labels == 0, seg2_labels)
-
-            ## This is incorporates GMM labels into PWS
-            
-            seg2_labels[seg1_labels == 2] = np.max(seg2_labels) + 1 # map background label of gmm to next pws label
-            for l in np.unique(seg2_labels): # clean up small pws labels
-                if np.sum(seg2_labels == l) < 500:
-                    seg2_labels = slu.fill_out_zeros(seg2_labels, seg2_labels == l)
-
-            seg2_labels = slu.get_significant_labels(seg2_labels, bg_contrast_flag=True)
+                # Instance (grains) segmentation of properties
+                print(f"Watershed Segmentation of GMM component {l}")
+                post.show_classification(temp_labels, no_outliers_data, data_type)
+                
+                # Add results from different components
+                temp_labels += np.max(seg2_labels) # To distinguish labels from different components
+                seg2_labels += temp_labels
+                
+            # Instance (grains) segmentation of properties
+            print("Watershed Segmentation of combined GMM components")
             post.show_classification(seg2_labels, no_outliers_data, data_type)
 
 ## Conected-components clustering
@@ -274,7 +289,6 @@ zscale = False
 data_type = 'Full_QNM'
 data_subtype = 'P3HT_OFET'
 input_cmap = 'jet'
-
 
 for h, im in enumerate(ims):
     print (f'-----------',files[h],'---------------------------------')
