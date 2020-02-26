@@ -3,7 +3,7 @@ import sys
 #from decimal import Decimal
 
 import numpy as np
-#import pandas as pd
+import pandas as pd
 #import scipy.stats as stats
 import matplotlib.pyplot as plt
 
@@ -20,7 +20,7 @@ from m2py.segmentation import segmentation_gmm as seg_gmm
 from m2py.segmentation import segmentation_watershed as seg_water
 
 opv_file_path = '/Volumes/Tatum_SSD-1/Grad_School/m2py/OPV_AFM/combined_npy_new/'
-opv_morph_map_file_path = '/Volumes/Tatum_SSD-1/Grad_School/m2py/Morpholgy_labels/opv_morph_maps/'
+opv_morph_map_file_path = '/Volumes/Tatum_SSD-1/Grad_School/m2py/Morphology_labels/OPV_morph_maps/3_component/'
 files = os.listdir(opv_file_path)
 
 
@@ -36,6 +36,10 @@ ims = []
 
 for i,fl in enumerate(files):
     ims.append(np.load(opv_file_path+fl))
+    
+#Excel file for tracking image quality and analysis progress
+progress_file_path = '/Users/wesleytatum/Desktop/device_morphology_progress.xlsx'
+prog_table = pd.read_excel(progress_file_path, 'OPV', header = 0, usecols = 'A:G')
 
 # The files will all be read in and processed, saving tresults to opv_morph_map_file_path
 def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, padding, embedding_dim, thresh, nonlinear, normalize, zscale, data_type, data_subtype, input_cmap):
@@ -153,7 +157,7 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
             
             seg2_labels = np.zeros_like(data[:, :, 0], dtype=np.int64)
             for l in comp_labels:
-                watershed_data = no_outliers_data[:, :, watershed_id] * (seg1_labels == l)    # Why the '*'? Can this be heightless??
+                watershed_data = no_outliers_data[:, :, watershed_id] * (seg1_labels == l)
                 temp_labels = seg2.fit_transform(watershed_data, outliers, pers_thresh=thresh)
                 temp_labels *= (seg1_labels == l)
                 
@@ -287,7 +291,10 @@ for h, im in enumerate(ims):
     print (f'-----------',files[h],'---------------------------------')
     print (f'--------------------',files[h],'------------------------')
     print (f'-----------------------------',files[h],'---------------')
-    outliers, seg1_labels, seg2_labels = m2py_pipeline(im, heightless = heightless,
+    if prog_table['Raw ok?'][h] == 0:
+        pass
+    else:
+        outliers, seg1_labels, seg2_labels = m2py_pipeline(im, heightless = heightless,
                                                           n_components = n_components,
                                                           outlier_threshold = outlier_threshold,
                                                           padding = padding,
@@ -299,5 +306,24 @@ for h, im in enumerate(ims):
                                                           data_type = data_type,
                                                           data_subtype = data_subtype,
                                                           input_cmap = input_cmap)
+    if prog_table['Seg 1'][h] == 1:
+
+        if prog_table['Seg 2'][h] == 1:
+            save_fl_path = opv_morph_map_file_path+files[h][:-4]+'_seg1.npy'
+            np.save(save_fl_path, seg1_labels)
+        
+            save_fl_path = opv_morph_map_file_path+files[h][:-4]+'_seg2.npy'
+            np.save(save_fl_path, seg2_labels)
+            
+        else:
+            pass
+        
+    else:
+        pass
+    
+        
+        
+        
+        
     
     

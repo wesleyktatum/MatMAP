@@ -674,31 +674,3 @@ def plot_descriptors_by_domain(descriptor_dict):
     plt.tight_layout()
     plt.show()
     
-def all_domain_properties(phase_labels, domain_labels):
-    
-    all_props = {}
-    
-    domain_count = int(domain_labels.max())
-    
-    for i in range(2, domain_count+1):
-#         print (i)
-    
-        domain = np.asarray([label for label in domain_labels == i])
-        #convert bool to int
-        domain = domain.astype(int)
-
-        #Check phase of pixels in the domain
-        phase = phase_labels[domain == 1]
-        phase_mode, count = stats.mode(phase, axis = None)
-
-        resized_domain = resize_boundaries(domain)
-        props_table = measure.regionprops_table(resized_domain, properties = ['label', 'major_axis_length','minor_axis_length',
-                                                                             'eccentricity', 'orientation', 'perimeter'])
-        props_table['label'] = phase_mode[0]
-
-        #Pass domain stats to proper phase's k:v pair
-        all_props[i] = (props_table)
-
-    props_df = pd.DataFrame.from_dict(all_props, orient = 'index')
-    
-    return props_df

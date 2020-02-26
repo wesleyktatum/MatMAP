@@ -11,7 +11,7 @@ import sys
 #from decimal import Decimal
 
 import numpy as np
-#import pandas as pd
+import pandas as pd
 #import scipy.stats as stats
 import matplotlib.pyplot as plt
 
@@ -27,9 +27,9 @@ from m2py.utils import seg_label_utils as slu
 from m2py.segmentation import segmentation_gmm as seg_gmm
 from m2py.segmentation import segmentation_watershed as seg_water
 
-opv_file_path = '/Volumes/Tatum_SSD-1/Grad_School/m2py/OFET_AFM/combined_npy_new/'
-opv_morph_map_file_path = '/Volumes/Tatum_SSD-1/Grad_School/m2py/Morpholgy_labels/OFET_morph_maps/'
-files = os.listdir(opv_file_path)
+ofet_file_path = '/Volumes/Tatum_SSD-1/Grad_School/m2py/OFET_AFM/combined_npy_new/'
+ofet_morph_map_file_path = '/Volumes/Tatum_SSD-1/Grad_School/m2py/Morphology_labels/OFET_morph_maps/'
+files = os.listdir(ofet_file_path)
 
 
 #test_file_path = '/Users/wesleytatum//Desktop/2019-10-11/npy/'
@@ -43,7 +43,11 @@ print (files)
 ims = []
 
 for i,fl in enumerate(files):
-    ims.append(np.load(opv_file_path+fl))
+    ims.append(np.load(ofet_file_path+fl))
+    
+#Excel file for tracking image quality and analysis progress
+progress_file_path = '/Users/wesleytatum/Desktop/device_morphology_progress.xlsx'
+prog_table = pd.read_excel(progress_file_path, 'OFET', header = 0, usecols = 'A:G')
 
 # The files will all be read in and processed, saving tresults to opv_morph_map_file_path
 def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, padding, embedding_dim, thresh, nonlinear, normalize, zscale, data_type, data_subtype, input_cmap):
@@ -154,14 +158,14 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
             if 0 in comp_labels: # Avoid outlier components / class
                 comp_labels.remove(0)
             
-            watershed_id = data_properties.index("Adhesion")
+            watershed_id = data_properties.index("Adhesion") #Perhaps I should try Stiffness instead
             
             seg2 = seg_water.SegmenterWatershed()
             thresh = thresh
             
             seg2_labels = np.zeros_like(data[:, :, 0], dtype=np.int64)
             for l in comp_labels:
-                watershed_data = no_outliers_data[:, :, watershed_id] * (seg1_labels == l)    # Why the '*'? Can this be heightless??
+                watershed_data = no_outliers_data[:, :, watershed_id] * (seg1_labels == l)
                 temp_labels = seg2.fit_transform(watershed_data, outliers, pers_thresh=thresh)
                 temp_labels *= (seg1_labels == l)
                 
@@ -294,7 +298,10 @@ for h, im in enumerate(ims):
     print (f'-----------',files[h],'---------------------------------')
     print (f'--------------------',files[h],'------------------------')
     print (f'-----------------------------',files[h],'---------------')
-    outliers, seg1_labels, seg2_labels = m2py_pipeline(im, heightless = heightless,
+    if prog_table['Raw ok?'][h] == 0:
+        pass
+    else:
+        outliers, seg1_labels, seg2_labels = m2py_pipeline(im, heightless = heightless,
                                                           n_components = n_components,
                                                           outlier_threshold = outlier_threshold,
                                                           padding = padding,
@@ -306,5 +313,19 @@ for h, im in enumerate(ims):
                                                           data_type = data_type,
                                                           data_subtype = data_subtype,
                                                           input_cmap = input_cmap)
+    if prog_table['Seg 1'][h] == 1:
+    
+        if prog_table['Seg 2'][h] == 1:
+            save_fl_path = ofet_morph_map_file_path+files[h][:-4]+'_seg1.npy'
+            np.save(save_fl_path, seg1_labels)
+            
+            save_fl_path = ofet_morph_map_file_path+files[h][:-4]+'_seg2.npy'
+            np.save(save_fl_path, seg2_labels)
+        
+        else:
+            pass 
+
+    else:
+        pass
     
     
