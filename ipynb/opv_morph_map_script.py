@@ -293,8 +293,12 @@ for h, im in enumerate(ims):
     print (f'-----------------------------',files[h],'---------------')
     if prog_table['Raw ok?'][h] == 0:
         pass
+    
     else:
-        outliers, seg1_labels, seg2_labels = m2py_pipeline(im, heightless = heightless,
+        if prog_table['Seg 1'][h] == 1:
+            if prog_table['Seg 2'][h] == 1:
+                
+                 outliers, seg1_labels, seg2_labels = m2py_pipeline(im, heightless = heightless,
                                                           n_components = n_components,
                                                           outlier_threshold = outlier_threshold,
                                                           padding = padding,
@@ -306,20 +310,18 @@ for h, im in enumerate(ims):
                                                           data_type = data_type,
                                                           data_subtype = data_subtype,
                                                           input_cmap = input_cmap)
-    if prog_table['Seg 1'][h] == 1:
-
-        if prog_table['Seg 2'][h] == 1:
-            save_fl_path = opv_morph_map_file_path+files[h][:-4]+'_seg1.npy'
-            np.save(save_fl_path, seg1_labels)
-        
-            save_fl_path = opv_morph_map_file_path+files[h][:-4]+'_seg2.npy'
-            np.save(save_fl_path, seg2_labels)
+                 
+                 save_fl_path = opv_morph_map_file_path+files[h][:-4]+'_seg1.npy'
+                 np.save(save_fl_path, seg1_labels)
+                    
+                 save_fl_path = opv_morph_map_file_path+files[h][:-4]+'_seg2.npy'
+                 np.save(save_fl_path, seg2_labels)
             
+            else:
+                pass 
+
         else:
             pass
-        
-    else:
-        pass
     
         
         

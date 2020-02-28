@@ -5,7 +5,7 @@ import sys
 import numpy as np
 import pandas as pd
 #import scipy.stats as stats
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 #%matplotlib inline
 
 module_path = os.path.abspath(os.path.join('../'))
@@ -44,11 +44,11 @@ for k, fl in enumerate(seg2_fl_list):
     seg2_dict[k] = np.load(map_file_path+fl)
     
 for i in range(len(seg1_dict)):
-    plt.imshow(seg1_dict[i])
-    plt.show()
-    plt.imshow(seg2_dict[i])
-    plt.show()
-    domain_props = slu.all_domain_properties(seg1_dict[i], seg2_dict[i])
+    domain_labels = slu.relable(seg2_dict[i])
+    phase_labels = slu.relable(seg1_dict[i])
+    
+    domain_props = slu.all_domain_properties(phase_labels, domain_labels)
     outfile = map_file_path+seg1_fl_list[i][:-8]+'domain_metrics.csv'
     domain_props.to_csv(outfile)
+    
     print ('finished file # ', i)
