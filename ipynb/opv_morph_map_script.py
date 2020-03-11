@@ -159,7 +159,6 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
             for l in comp_labels:
                 watershed_data = no_outliers_data[:, :, watershed_id] * (seg1_labels == l)
                 temp_labels = seg2.fit_transform(watershed_data, outliers, pers_thresh=thresh)
-                temp_labels *= (seg1_labels == l)
                 
                 # NOTE: no need to fill out zeros in this case
             
@@ -169,6 +168,7 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
                 
                 # Add results from different components
                 temp_labels += np.max(seg2_labels) # To distinguish labels from different components
+                temp_labels *= (seg1_labels == l)
                 seg2_labels += temp_labels
                 
             # Instance (grains) segmentation of properties
@@ -239,7 +239,6 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
             for l in comp_labels:
                 watershed_data = no_outliers_data[:, :, watershed_id] * (seg1_labels == l)    # Why the '*'? Can this be heightless??
                 temp_labels = seg2.fit_transform(watershed_data, outliers, pers_thresh=thresh)
-                temp_labels *= (seg1_labels == l)
                 
                 # NOTE: no need to fill out zeros in this case
             
@@ -249,6 +248,7 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
                 
                 # Add results from different components
                 temp_labels += np.max(seg2_labels) # To distinguish labels from different components
+                temp_labels *= (seg1_labels == l)
                 seg2_labels += temp_labels
                 
             # Instance (grains) segmentation of properties

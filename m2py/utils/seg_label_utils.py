@@ -594,29 +594,45 @@ def resize_boundaries(grain):
 def all_domain_properties(phase_labels, domain_labels):
     
     all_props = {}
-    
+    domain_labels = relabel(domain_labels)
+    phase_labels = phase_labels
+        
     domain_count = int(domain_labels.max())
+#    print (domain_count)
     
-    for i in range(1, domain_count+1):
-#         print (i)
+    unique_labes = get_unique_labels(domain_labels)
+    unique_labes.sort()
+#    print (unique_labes)
     
+    for i in range(2, domain_count+1):
         domain = np.asarray([label for label in domain_labels == i])
+        
         #convert bool to int
         domain = domain.astype(int)
-
+    
         #Check phase of pixels in the domain
         phase = phase_labels[domain == 1]
         phase_mode, count = stats.mode(phase, axis = None)
-
-        resized_domain = resize_boundaries(domain)
-        props_table = measure.regionprops_table(resized_domain, properties = ['label', 'major_axis_length','minor_axis_length',
-                                                                             'eccentricity', 'orientation', 'perimeter'])
-        props_table['label'] = phase_mode[0]
-
-        #Pass domain stats to proper phase's k:v pair
+        
+        domain_pixel_count = np.count_nonzero(domain == 1)
+#        print (f"domain {i} has {domain_pixel_count} pixels")
+    
+        if domain_pixel_count > 1:
+            props_table = measure.regionprops_table(domain, properties = ['label', 'major_axis_length','minor_axis_length',
+                                                                                  'eccentricity', 'orientation', 'perimeter'])
+            props_table['label'] = phase_mode[0]
+            
+        elif domain_pixel_count <= 1:
+            props_table = {'label':int(phase_mode), 'major_axis_length':1,'minor_axis_length':1,
+                                        'eccentricity':0, 'orientation':0, 'perimeter':1}
+    
+        else:
+            pass
+    
+    #     Pass domain stats to proper phase's k:v pair
         all_props[i] = (props_table)
-
-    props_df = pd.DataFrame.from_dict(all_props, orient = 'index')
+    
+    props_df = pd.DataFrame.from_dict(all_props, orient = 'index', dtype = 'float64')
     
     return props_df
 

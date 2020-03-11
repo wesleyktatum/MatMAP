@@ -28,7 +28,7 @@ from m2py.segmentation import segmentation_gmm as seg_gmm
 from m2py.segmentation import segmentation_watershed as seg_water
 
 ofet_file_path = '/Volumes/Tatum_SSD-1/Grad_School/m2py/OFET_AFM/combined_npy_new/'
-ofet_morph_map_file_path = '/Volumes/Tatum_SSD-1/Grad_School/m2py/Morphology_labels/OFET_morph_maps/'
+ofet_morph_map_file_path = '/Volumes/Tatum_SSD-1/Grad_School/m2py/Morphology_labels/OFET_morph_maps/Default_params/'
 files = os.listdir(ofet_file_path)
 
 
@@ -167,7 +167,6 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
             for l in comp_labels:
                 watershed_data = no_outliers_data[:, :, watershed_id] * (seg1_labels == l)
                 temp_labels = seg2.fit_transform(watershed_data, outliers, pers_thresh=thresh)
-                temp_labels *= (seg1_labels == l)
                 
                 # NOTE: no need to fill out zeros in this case
             
@@ -177,6 +176,7 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
         
                 # Add results from different components
                 temp_labels += np.max(summed_labels) # To distinguish labels from different components
+                temp_labels *= (seg1_labels == l)
                 summed_labels += temp_labels
                 
             seg2_labels = slu.relabel(summed_labels)
@@ -249,7 +249,6 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
             for l in comp_labels:
                 watershed_data = no_outliers_data[:, :, watershed_id] * (seg1_labels == l)    # Why the '*'? Can this be heightless??
                 temp_labels = seg2.fit_transform(watershed_data, outliers, pers_thresh=thresh)
-                temp_labels *= (seg1_labels == l)
                 
                 # NOTE: no need to fill out zeros in this case
             
@@ -259,6 +258,7 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
                 
                 # Add results from different components
                 temp_labels += np.max(summed_labels) # To distinguish labels from different components
+                temp_labels *= (seg1_labels == l)
                 summed_labels += temp_labels
                 
             seg2_labels = slu.relabel(summed_labels)    

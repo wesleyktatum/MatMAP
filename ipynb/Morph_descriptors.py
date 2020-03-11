@@ -30,12 +30,14 @@ seg1_dict = {}
 seg2_dict = {}
 
 for fl in files:
-    if fl[-5] == '1':
+    if fl[-5] == '1':   #Seg1 files
         seg1_fl_list.append(fl)
-    elif fl[-5] == '2':
+    elif fl[-5] == '2': #Seg2 files
         seg2_fl_list.append(fl)
+    elif fl[-1] == 'v': #Morphology descriptor .csv files
+        pass
     else:
-        print(fl[-5], ' is messed up')
+        print(fl[:-4], ' is messed up')
 
 for k, fl in enumerate(seg1_fl_list):
     seg1_dict[k] = np.load(map_file_path+fl)
@@ -44,11 +46,12 @@ for k, fl in enumerate(seg2_fl_list):
     seg2_dict[k] = np.load(map_file_path+fl)
     
 for i in range(len(seg1_dict)):
-    domain_labels = slu.relable(seg2_dict[i])
-    phase_labels = slu.relable(seg1_dict[i])
+    domain_labels = slu.relabel(seg2_dict[i])
+    phase_labels = slu.relabel(seg1_dict[i])
     
     domain_props = slu.all_domain_properties(phase_labels, domain_labels)
     outfile = map_file_path+seg1_fl_list[i][:-8]+'domain_metrics.csv'
     domain_props.to_csv(outfile)
     
     print ('finished file # ', i)
+           
