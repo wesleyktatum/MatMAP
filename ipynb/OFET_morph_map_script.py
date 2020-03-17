@@ -225,7 +225,7 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
             pca_components = pca_components.reshape(h, w, num_pca_components)
             post.show_classification_correlation(seg1_labels, pca_components, data_type, title_flag=False)
 
-            post.show_classification_distributions(seg1_labels, pca_components, data_type, title_flag=False)
+            post.show_classification_distributions(seg1_labels, pca_components, outliers, data_type, title_flag=False)
 
             
         else:
@@ -240,7 +240,7 @@ def m2py_pipeline(dataframe, heightless, outlier_threshold, n_components, paddin
             if 0 in comp_labels: # Avoid outlier components / class
                 comp_labels.remove(0)
             
-            watershed_id = data_properties.index("Zscale")
+            watershed_id = data_properties.index("Adhesion")
             
             seg2 = seg_water.SegmenterWatershed()
             thresh = thresh
@@ -286,7 +286,7 @@ print ("ims has",len(ims), "items")
 # Global parameters for OPV workflow. Includes all variables from above defined function, except 'dataframe = im'
 
 n_components = 2
-heightless = True
+heightless = False
 outlier_threshold = 2.25
 padding = 1
 embedding_dim = 3
@@ -306,8 +306,8 @@ for h, im in enumerate(ims):
         pass
     
     else:
-        if prog_table['Seg 1'][h] == 1:
-            if prog_table['Seg 2'][h] == 1:
+        if prog_table['Seg 1'][h] == 0:
+            if prog_table['Seg 2'][h] == 0:
                  outliers, seg1_labels, seg2_labels = m2py_pipeline(im, heightless = heightless,
                                                           n_components = n_components,
                                                           outlier_threshold = outlier_threshold,
@@ -321,11 +321,11 @@ for h, im in enumerate(ims):
                                                           data_subtype = data_subtype,
                                                           input_cmap = input_cmap)
                  
-                 save_fl_path = ofet_morph_map_file_path+files[h][:-4]+'_seg1.npy'
-                 np.save(save_fl_path, seg1_labels)
-                    
-                 save_fl_path = ofet_morph_map_file_path+files[h][:-4]+'_seg2.npy'
-                 np.save(save_fl_path, seg2_labels)
+#                 save_fl_path = ofet_morph_map_file_path+files[h][:-4]+'_seg1.npy'
+#                 np.save(save_fl_path, seg1_labels)
+#                    
+#                 save_fl_path = ofet_morph_map_file_path+files[h][:-4]+'_seg2.npy'
+#                 np.save(save_fl_path, seg2_labels)
             
             else:
                 pass 
