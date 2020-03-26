@@ -10,8 +10,8 @@ class ThresholdedMSELoss(nn.Module):
     gathered datasets and literature reported boundaries of performance.
     
     For the following predictions that are improbable, the loss is penalized:
-    - X < 0%
-    - X > 6%
+    - X < lower
+    - X > upper
     """
 
     def __init__(self, lower, upper):
@@ -24,7 +24,8 @@ class ThresholdedMSELoss(nn.Module):
 #         print (labels.size())
         
         result_list = torch.zeros(predictions.size(0))
-        el_count = 0
+        element_count = 0
+        correct = 0
         
         for x, y in zip(predictions, labels):
 #             print (f"{el_count+1}/{result_list.size(0)}")
@@ -33,28 +34,48 @@ class ThresholdedMSELoss(nn.Module):
             if torch.le(x, torch.tensor([self.lower])) == torch.tensor([1]):
                 #Exponential MSE for x <= 0
 #                 print(f"prediction = {x}, lower threshold violated")
-                error = torch.add(x, torch.neg(y))
+
+                # Need to use only torch.nn.Function() and torch.() functions for autograd to track operations
+                error = torch.add(x, torch.neg(y)) #error = x + (-y)
+        
+                #if precision <= 10%, count as correct
+                if torch.le(torch.div(error, y), torch.tensor(0.1)) == torch.tensor([1]):
+                    correct += 1
+            
                 element_result = torch.pow(error, 2)
-                element_result = torch.pow(element_result, 2)
+                element_result = torch.pow(element_result, 1)
+            
 
            # if (x <= 6) == 1 (True)
             elif torch.ge(x, torch.tensor([self.upper])) == torch.tensor([1]):
                 #exponential MSE for x >= 6
 #                 print(f"prediction = {x}, upper threshold violated")
                 error = torch.add(x, torch.neg(y))
+            
+            #if precision <= 10%, count as correct
+                if torch.le(torch.div(error, y), torch.tensor(0.1)) == torch.tensor([1]):
+                    correct += 1
+            
                 element_result = torch.pow(error, 2)
-                element_result = torch.pow(element_result, 2)
+                element_result = torch.pow(element_result, 1)
 
                 # all other values of x
             else:
 #                 print(f"prediction = {x}")
                 error = torch.add(x, torch.neg(y))
+                
+                #if precision <= 10%, count as correct
+                if torch.le(torch.div(error, y), torch.tensor(0.1)) == torch.tensor([1]):
+                    correct += 1
+            
                 element_result = torch.pow(error, 2)
                 
             result_list[el_count] = element_result
-            el_count+=1
+            element_count+=1
+            
+            accuracy = correct/element_count
 
             result = result_list.mean()
 
-            return result
+            return result, accuracy
 
