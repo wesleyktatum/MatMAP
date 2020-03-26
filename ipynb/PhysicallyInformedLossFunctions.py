@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class PCE_Loss(torch.autograd.Function()):
+class PCE_Loss(nn.Module):
     """
     This class contains loss functions that use a mean-squared-error loss for reasonable predictions.
     They inherit from torch.nn.Module just like the custom model. For physically unreasonable conditions,
@@ -15,10 +15,11 @@ class PCE_Loss(torch.autograd.Function()):
     """
 
     def __init__(self):
-        super(PCE_Loss, self).__init()
+        super(PCE_Loss, self).__init__()
 
     @staticmethod   
-    def forward(ctx, predictions, labels):
+#     def forward(ctx, predictions, labels):
+    def forward(predictions, labels):
         for x, y in predictions, labels:
 
             if x < 0:
@@ -45,7 +46,8 @@ class PCE_Loss(torch.autograd.Function()):
             return result
 
     @staticmethod        
-    def backward(ctx, grad_output):
+#     def backward(ctx, grad_output):
+    def backward(grad_output):
 
         result, weight, bias = ctx.saved_tensors
 
@@ -65,7 +67,7 @@ class PCE_Loss(torch.autograd.Function()):
         return grad_input, grad_weight, grad_bias
 
 
-class Voc_Loss(torch.autograd.Function()):
+class Voc_Loss(nn.Module):
     """
     This class contains loss functions that use a mean-squared-error loss for reasonable predictions.
     They inherit from torch.nn.Module just like the custom model. For physically unreasonable conditions,
@@ -78,10 +80,10 @@ class Voc_Loss(torch.autograd.Function()):
     """
 
     def __init__(self):
-        super(Voc_Loss, self).__init()
+        super(Voc_Loss, self).__init__()
 
     @staticmethod   
-    def forward(ctx, predictions, labels):
+    def forward(predictions, labels):
         for x, y in predictions, labels:
 
             if x < 0:
@@ -108,7 +110,7 @@ class Voc_Loss(torch.autograd.Function()):
             return result
 
     @staticmethod        
-    def backward(ctx, grad_output):
+    def backward(grad_output):
 
         result, weight, bias = ctx.saved_tensors
 
@@ -127,7 +129,7 @@ class Voc_Loss(torch.autograd.Function()):
         return grad_input, grad_weight, grad_bias
 
 
-class Jsc_Loss(torch.autograd.Function()):
+class Jsc_Loss(nn.Module):
     """
     This class contains loss functions that use a mean-squared-error loss for reasonable predictions.
     They inherit from torch.nn.Module just like the custom model. For physically unreasonable conditions,
@@ -140,10 +142,10 @@ class Jsc_Loss(torch.autograd.Function()):
     """
 
     def __init__(self):
-        super(Jsc_Loss, self).__init()
+        super(Jsc_Loss, self).__init__()
 
     @staticmethod   
-    def forward(ctx, predictions, labels):
+    def forward(predictions, labels):
         for x, y in predictions, labels:
 
             if x < 0:
@@ -170,7 +172,7 @@ class Jsc_Loss(torch.autograd.Function()):
             return result
 
     @staticmethod        
-    def backward(ctx, grad_output):
+    def backward(grad_output):
 
         result, weight, bias = ctx.saved_tensors
 
@@ -188,7 +190,7 @@ class Jsc_Loss(torch.autograd.Function()):
 
         return grad_input, grad_weight, grad_bias
 
-class FF_Loss(torch.autograd.Function()):
+class FF_Loss(nn.Module):
     """
     This class contains loss functions that use a mean-squared-error loss for reasonable predictions.
     They inherit from torch.nn.Module just like the custom model. For physically unreasonable conditions,
@@ -201,10 +203,10 @@ class FF_Loss(torch.autograd.Function()):
     """
 
     def __init__(self):
-        super(FF_Loss, self).__init()
+        super(FF_Loss, self).__init__()
 
     @staticmethod   
-    def forward(ctx, predictions, labels):
+    def forward(predictions, labels):
         for x, y in predictions, labels:
 
             if x < 10:
@@ -231,7 +233,7 @@ class FF_Loss(torch.autograd.Function()):
             return result
 
     @staticmethod        
-    def backward(ctx, grad_output):
+    def backward(grad_output):
 
         result, weight, bias = ctx.saved_tensors
 
