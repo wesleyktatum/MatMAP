@@ -4,10 +4,10 @@ import torch.nn.functional as F
 
 class ThresholdedMSELoss(nn.Module):
     """
-    This class contains loss functions that use a mean-squared-error loss for reasonable predictions.
-    They inherit from torch.nn.Module just like the custom model. For physically unreasonable conditions,
-    prediction loss is more severely calculated. What qualifies as reasonable is based on empirically
-    gathered datasets and literature reported boundaries of performance.
+    This class contains a loss function that use a mean-squared-error loss for reasonable predictions
+    and an exponential penalty for unreasonable predictions. They inherit from torch.nn.Module. For 
+    physically unreasonable conditions, prediction loss is more severely calculated. What qualifies as
+    reasonable is based on empirically gathered datasets and literature reported boundaries of performance.
     
     For the following predictions that are improbable, the loss is penalized:
     - X < lower
