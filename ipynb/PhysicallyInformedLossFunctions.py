@@ -25,7 +25,6 @@ class ThresholdedMSELoss(nn.Module):
         
         result_list = torch.zeros(predictions.size(0))
         element_count = 0
-        correct = 0
         
         for x, y in zip(predictions, labels):
 #             print (f"{el_count+1}/{result_list.size(0)}")
@@ -37,11 +36,6 @@ class ThresholdedMSELoss(nn.Module):
 
                 # Need to use only torch.nn.Function() and torch.() functions for autograd to track operations
                 error = torch.add(x, torch.neg(y)) #error = x + (-y)
-        
-                #if precision <= 10%, count as correct
-                if torch.le(torch.div(error, y), torch.tensor(0.1)) == torch.tensor([1]):
-                    correct += 1
-            
                 element_result = torch.pow(error, 2)
                 element_result = torch.pow(element_result, 1)
             
@@ -50,12 +44,8 @@ class ThresholdedMSELoss(nn.Module):
             elif torch.ge(x, torch.tensor([self.upper])) == torch.tensor([1]):
                 #exponential MSE for x >= 6
 #                 print(f"prediction = {x}, upper threshold violated")
+
                 error = torch.add(x, torch.neg(y))
-            
-            #if precision <= 10%, count as correct
-                if torch.le(torch.div(error, y), torch.tensor(0.1)) == torch.tensor([1]):
-                    correct += 1
-            
                 element_result = torch.pow(error, 2)
                 element_result = torch.pow(element_result, 1)
 
@@ -63,19 +53,52 @@ class ThresholdedMSELoss(nn.Module):
             else:
 #                 print(f"prediction = {x}")
                 error = torch.add(x, torch.neg(y))
-                
-                #if precision <= 10%, count as correct
-                if torch.le(torch.div(error, y), torch.tensor(0.1)) == torch.tensor([1]):
-                    correct += 1
-            
                 element_result = torch.pow(error, 2)
                 
-            result_list[el_count] = element_result
+            result_list[element_count] = element_result
             element_count+=1
             
-            accuracy = correct/element_count
-
+            
+            # Average of all the squared errors
             result = result_list.mean()
 
-            return result, accuracy
+            return result
 
+
+class Accuracy(nn.Module):
+    """
+    Simple class to interate through predictions and labels to determine overall accuracy of a model
+    """
+    
+    def __init__(self, acc_thresh = 0.1):
+        super(Accuracy, self).__init__()
+        self.acc_thresh = acc_thresh
+        
+    def forward(self, predictions, labels):
+        element_count = 0
+        correct = 0
+        
+        accuracy_list = []
+        
+        for x, y in zip(predictions, labels):
+            
+            error = torch.tensor(x-y)
+            
+            #if precision <= accuracy threshold, count as correct
+            if torch.le(torch.div(error, y), torch.tensor(self.acc_thresh)) == torch.tensor([1]):
+                correct += 1
+                element_count += 1
+
+            else:
+                element_count += 1
+            
+            accuracy = (correct/element_count) * 100
+            accuracy_list.append(accuracy)
+            
+        acc_list = torch.tensor(accuracy_list)
+            
+        avg_acc = acc_list.mean()
+
+        return avg_acc
+    
+    
