@@ -101,4 +101,34 @@ class Accuracy(nn.Module):
 
         return avg_acc
     
+class MAPE(nn.Module):
+    """
+    Simple class to interate through pytorch tensors of predictions and ground-tuths to calculate 
+    the Mean Absolute Percent Error (MAPE).
+    """
+    
+    def __init__(self):
+        super (MAPE, self).__init__()
+        
+    def forward(self, predictions, labels):
+        
+        absolute_percent_error_list = []
+        
+        for x, y in zip(predictions, labels):
+            
+            error = torch.tensor(x-y)
+            
+            ae = torch.abs(error)
+            
+            ape = torch.div(ae, y)
+            
+            absolute_percent_error_list.append(ape.item())
+            
+        ape_list = torch.tensor(absolute_percent_error_list)
+            
+        mape = ape_list.mean()
+        mape = mape * 100
+        
+        return mape
+    
     
