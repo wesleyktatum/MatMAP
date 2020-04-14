@@ -1,3 +1,5 @@
+import numpy as np
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -20,20 +22,15 @@ class ThresholdedMSELoss(nn.Module):
         self.upper = upper
 
     def forward(self, predictions, labels):
-#         print (predictions.size())
-#         print (labels.size())
         
         result_list = torch.zeros(predictions.size(0))
         element_count = 0
         
         for x, y in zip(predictions, labels):
-#             print (f"{el_count+1}/{result_list.size(0)}")
             
             # if (x >= 0) == 1 (True)
             if torch.le(x, torch.tensor([self.lower])) == torch.tensor([1]):
                 #Exponential MSE for x <= 0
-#                 print(f"prediction = {x}, lower threshold violated")
-
                 # Need to use only torch.nn.Function() and torch.() functions for autograd to track operations
                 error = torch.add(x, torch.neg(y)) #error = x + (-y)
                 element_result = torch.pow(error, 2)
@@ -43,15 +40,12 @@ class ThresholdedMSELoss(nn.Module):
            # if (x <= 6) == 1 (True)
             elif torch.ge(x, torch.tensor([self.upper])) == torch.tensor([1]):
                 #exponential MSE for x >= 6
-#                 print(f"prediction = {x}, upper threshold violated")
-
                 error = torch.add(x, torch.neg(y))
                 element_result = torch.pow(error, 2)
                 element_result = torch.pow(element_result, 1)
 
-                # all other values of x
+            # all other values of x
             else:
-#                 print(f"prediction = {x}")
                 error = torch.add(x, torch.neg(y))
                 element_result = torch.pow(error, 2)
                 
@@ -82,7 +76,7 @@ class Accuracy(nn.Module):
         
         for x, y in zip(predictions, labels):
             
-            error = torch.tensor(x-y)
+            error = torch.tensor(y-x)
             
             #if precision <= accuracy threshold, count as correct
             if torch.le(torch.div(error, y), torch.tensor(self.acc_thresh)) == torch.tensor([1]):
@@ -113,20 +107,20 @@ class MAPE(nn.Module):
     def forward(self, predictions, labels):
         
         absolute_percent_error_list = []
+        count = 0
         
         for x, y in zip(predictions, labels):
+            count += 1
             
-            error = torch.tensor(x-y)
+            error = y - x
             
-            ae = torch.abs(error)
+            ae = np.absolute(error)
             
-            ape = torch.div(ae, y)
+            ape = ae/y
             
-            absolute_percent_error_list.append(ape.item())
+            absolute_percent_error_list.append(ape)
             
-        ape_list = torch.tensor(absolute_percent_error_list)
-            
-        mape = ape_list.mean()
+        mape = np.sum(absolute_percent_error_list) / count
         mape = mape * 100
         
         return mape
