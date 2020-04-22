@@ -69,29 +69,30 @@ class Accuracy(nn.Module):
         self.acc_thresh = acc_thresh
         
     def forward(self, predictions, labels):
-        element_count = 0
-        correct = 0
-        
-        accuracy_list = []
-        
-        for x, y in zip(predictions, labels):
-            
-            error = torch.tensor(y-x)
-            
-            #if precision <= accuracy threshold, count as correct
-            if torch.le(torch.div(error, y), torch.tensor(self.acc_thresh)) == torch.tensor([1]):
-                correct += 1
-                element_count += 1
+        with torch.no_grad():
+            element_count = 0
+            correct = 0
 
-            else:
-                element_count += 1
-            
-            accuracy = (correct/element_count) * 100
-            accuracy_list.append(accuracy)
-            
-        acc_list = torch.tensor(accuracy_list)
-            
-        avg_acc = acc_list.mean()
+            accuracy_list = []
+
+            for x, y in zip(predictions, labels):
+
+                error = torch.tensor(y-x)
+
+                #if precision <= accuracy threshold, count as correct
+                if torch.le(torch.div(error, y), torch.tensor(self.acc_thresh)) == torch.tensor([1]):
+                    correct += 1
+                    element_count += 1
+
+                else:
+                    element_count += 1
+
+                accuracy = (correct/element_count) * 100
+                accuracy_list.append(accuracy)
+
+            acc_list = torch.tensor(accuracy_list)
+
+            avg_acc = acc_list.mean()
 
         return avg_acc
     
@@ -105,23 +106,24 @@ class MAPE(nn.Module):
         super (MAPE, self).__init__()
         
     def forward(self, predictions, labels):
+        with torch.no_grad():
         
-        absolute_percent_error_list = []
-        count = 0
-        
-        for x, y in zip(predictions, labels):
-            count += 1
-            
-            error = y - x
-            
-            ae = np.absolute(error)
-            
-            ape = ae/y
-            
-            absolute_percent_error_list.append(ape)
-            
-        mape = np.sum(absolute_percent_error_list) / count
-        mape = mape * 100
+            absolute_percent_error_list = []
+            count = 0
+
+            for x, y in zip(predictions, labels):
+                count += 1
+
+                error = y - x
+
+                ae = np.absolute(error)
+
+                ape = ae/y
+
+                absolute_percent_error_list.append(ape)
+
+            mape = np.sum(absolute_percent_error_list) / count
+            mape = mape * 100
         
         return mape
     

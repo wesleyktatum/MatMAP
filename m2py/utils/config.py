@@ -28,5 +28,8 @@ data_info = {
                  "sample_size": {"P3HT:PCBM_OPV": 0.5, "P3HT_OFET":0.5}},
                  
     "OPV_QNM": {"properties": ["Zscale",  "PFE", "Stiffness", "LogDMT", "Adhesion", "Deformation", "Dissipation", "Height"],
-                 "sample_size": {"P3HT:PCBM_OPV": 0.5, "P3HT_OFET":0.5}}
+                "sample_size": {"P3HT:PCBM_OPV": 0.5, "P3HT_OFET":0.5}},
+    
+    "Raman": {"properties": ['R', 'G', 'B'],
+              "sample_size": {"Microplastics": 20}}
 }
