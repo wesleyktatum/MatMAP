@@ -110,20 +110,51 @@ class MAPE(nn.Module):
         
             absolute_percent_error_list = []
             count = 0
+            zero_MAPE = 0
 
             for x, y in zip(predictions, labels):
                 count += 1
+                
+                if x == 0.0:
+                    error = torch.neg(torch.tensor(y))
+                    ae =torch.abs(error)
+                    ape = torch.div(ae, y)
+                    
+                elif y == 0.0:
+                    error = x
+                    y = x - 0.01
+                    ae =torch.abs(error)
+                    ape = torch.div(ae, y)
+                    
+                    zero_MAPE += 1
+                    
+                else:
+                    error = torch.add(x, torch.neg(y))
+                    ae =torch.abs(error)
+                    ape = torch.div(ae, y)
+                    
+#                 print (f"x = {x}")
+#                 print (f"y = {y}")
 
-                error = y - x
+                
+#                 print (f"error = {error}")
+#                 print (f"absolute error = {ae}")
+#                 print (f"absolute percent error = {ape}")
 
-                ae = np.absolute(error)
+                absolute_percent_error_list.append(ape.item())
 
-                ape = ae/y
-
-                absolute_percent_error_list.append(ape)
-
-            mape = np.sum(absolute_percent_error_list) / count
+            mape = 0
+            for el in absolute_percent_error_list:
+                if el == torch.tensor(np.float("inf")):
+                    pass
+                else:
+                    mape += el
+                    
+#                 print (f"el = {el}")
+#                 print (f"loop map = {mape}")
+            mape = mape / count
             mape = mape * 100
+#             print (f"mape = {mape}")
         
         return mape
     
