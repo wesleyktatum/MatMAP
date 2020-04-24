@@ -1,10 +1,43 @@
 # m2py: Materials Morphology Python Package
 
-### Installation
+An open-sourced library for automated phase and domain labeling in scanning probe microscopy (SPM) data
+
 
 ### Usage
 
+Pre and post-processing functions are found in the *utils* folder, along with a modules for label handling
+and other utility functions. Instance and Semantic segmenter modules are found in the *segmentation* directory.
+
+Example scripts for generating and analyzing m2py labels for organic photovoltaic (OPV) and organic field-effect
+transistor (OFET) device active-layers are found in the *scripts* directory. Finally, neural networks
+implemented using PyTorch are located in the *networks* folders. The shown networks are tuned to the OPV
+and OFET datasets, but include base classes and protocol for networks training on tabular data, m2py
+labels, or both.
+
+Examples of features, usage, and data exploration are available in the *ipynb* folder.
+
+
 ### Background
+
+SPM techniques have been pivotal in understanding surfaces, morphologies, and intermolecular interactions
+of matter from the atomic to millimeter scales. Probes interacting with the material surface produce
+2-dimensional images of the topography with intensity scales representing any number of material properties
+(_e.g._ modulus, conductivity, or capacitance). In many experiments, multiple properties can be imaged
+simultaneously, producing a 3-dimensional stack of these images.
+
+By utilizing different combinations of computer vision and machine learning techniques, m2py leverages
+differences in imaged  material properties to recognize different material phases, as well as 
+different domains and topographical features. First, outlier pixels or signals can be removed. Next,
+signals are compressed to only the most informative features via PCA. These signals can be deconvoluted
+via GMM, or some other semantic segmenter for phase labeling. Finally, an instance segmenter, such as
+Persistence Watershed Segmentation, clusters the phase-labeled pixels into domains, which receive
+another label.
+
+Once labeled by m2py segmenters, quantitative descriptions of each domain and the total morphology
+are extracted and can be used to train supervised models to predict material properties or performance.
+Such supervised training has not been accessible to most SPM researchers, due to the labor-intensive
+nature of manual-labeling. 
+
 
 #### Results from the MATDAT 2018 Hackathon
 
