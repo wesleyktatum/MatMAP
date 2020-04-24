@@ -86,16 +86,16 @@ def train_OPV_df_model(model, training_data_set, optimizer):
     return train_epoch_loss, pce_train_epoch_loss, voc_train_epoch_loss, jsc_train_epoch_loss, ff_train_epoch_loss
 
 
-def train_m2py_model(model, training_data_set, criterion, optimizer):
+def train_OPV_m2py_model(model, training_data_set, criterion, optimizer):
     
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     
-    total_step = len(im_training_data_set)
+    total_step = len(training_data_set)
     loss_list = []
     
     model.train()
 
-    for images, labels in im_training_data_set:
+    for images, labels in training_data_set:
         images = images.to(device)
         labels = labels.to(device)
         
@@ -103,10 +103,8 @@ def train_m2py_model(model, training_data_set, criterion, optimizer):
         im_out, im_train_out = model(images)
         optimizer.zero_grad()
         
-        optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=im_learning_rate)
-        
         # Gather the loss
-        loss = im_criterion(outputs, labels)
+        loss = criterion(outputs, labels)
         loss_list.append(loss.item())
 
         # backprop and perform Adam optimization

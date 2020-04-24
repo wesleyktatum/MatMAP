@@ -122,7 +122,7 @@ class MAPE(nn.Module):
                     
                 elif y == 0.0:
                     error = x
-                    y = x - 0.01
+                    y = x - 0.001
                     ae =torch.abs(error)
                     ape = torch.div(ae, y)
                     
