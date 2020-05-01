@@ -15,7 +15,6 @@ if module_path not in sys.path:
     sys.path.append(module_path)
 import physically_informed_loss_functions as PhysLoss
 
-torch.manual_seed(28)
 
 def eval_OPV_df_model(model, testing_data_set):
     

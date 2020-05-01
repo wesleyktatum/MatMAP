@@ -15,7 +15,6 @@ if module_path not in sys.path:
     sys.path.append(module_path)
 import physically_informed_loss_functions as PhysLoss
 
-torch.manual_seed(28)
 
 def train_OPV_df_model(model, training_data_set, optimizer):
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -83,7 +82,7 @@ def train_OPV_df_model(model, training_data_set, optimizer):
     jsc_train_epoch_loss.append(sum(jsc_train_losses)/train_total)
     ff_train_epoch_loss.append(sum(ff_train_losses)/train_total)
     
-    return train_epoch_loss, pce_train_epoch_loss, voc_train_epoch_loss, jsc_train_epoch_loss, ff_train_epoch_loss
+    return model, train_epoch_loss, pce_train_epoch_loss, voc_train_epoch_loss, jsc_train_epoch_loss, ff_train_epoch_loss
 
 
 def train_OPV_m2py_model(model, training_data_set, criterion, optimizer):
@@ -114,4 +113,4 @@ def train_OPV_m2py_model(model, training_data_set, criterion, optimizer):
     total = len(loss_list)
     epoch_loss = sum(loss_list)/total
     
-    return epoch_loss
+    return model, epoch_loss

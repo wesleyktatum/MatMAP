@@ -69,6 +69,7 @@ class Accuracy(nn.Module):
         self.acc_thresh = acc_thresh
         
     def forward(self, predictions, labels):
+        model.eval()
         with torch.no_grad():
             element_count = 0
             correct = 0
