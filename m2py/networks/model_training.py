@@ -36,6 +36,7 @@ def train_OPV_df_model(model, training_data_set, optimizer):
     #switch model to training mode
     model.train()
     
+    #TODO: Change thresholds to reflect normalization!!
     pce_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 6)
     voc_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1)
     jsc_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 10)
@@ -114,3 +115,74 @@ def train_OPV_m2py_model(model, training_data_set, criterion, optimizer):
     epoch_loss = sum(loss_list)/total
     
     return model, epoch_loss
+
+
+def train_OFET_df_model(model, training_data_set, optimizer):
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    
+    train_epoch_loss = []
+    mu_train_epoch_loss = []
+    r_train_epoch_loss = []
+    on_off_train_epoch_loss = []
+    vt_train_epoch_loss = []
+    
+    train_losses = []
+    mu_train_losses = []
+    r_train_losses = []
+    on_off_train_losses = []
+    vt_train_losses = []
+    
+    train_total = 0
+    
+    #switch model to training mode
+    model.train()
+    
+    mu_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 0.1)
+    r_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1)
+    on_off_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 300000)
+    vt_criterion = PhysLoss.ThresholdedMSELoss(lower = -25, upper = 125)
+    
+    for train_data, mu_labels, r_labels, on_off_labels, vt_labels in training_data_set:
+        
+        train_data = train_data.to(device)
+        mu_labels = mu_labels.to(device)
+        r_labels = r_labels.to(device)
+        on_off_labels = on_off_labels.to(device)
+        vt_labels = vt_labels.to(device)
+        
+        model.zero_grad() #zero out any gradients from prior loops 
+        mu_out, r_out, on_off_out, vt_out = model(train_data) #gather model predictions for this loop
+        
+        #calculate error in the predictions
+        mu_loss = mu_criterion(mu_out, mu_labels)
+        r_loss = r_criterion(r_out, r_labels)
+        on_off_loss = on_off_criterion(on_off_out, on_off_labels)
+        vt_loss = vt_criterion(vt_out, vt_labels)
+        
+        total_loss = mu_loss + r_loss + on_off_loss + vt_loss
+        
+        #BACKPROPOGATE LIKE A MF
+        torch.autograd.backward([mu_loss, r_loss, on_off_loss, vt_loss])
+        optimizer.step()
+        
+        #save loss for this batch
+        train_losses.append(total_loss.item())
+        train_total+=1
+        
+        mu_train_losses.append(mu_loss.item())
+        r_train_losses.append(r_loss.item())
+        on_off_train_losses.append(on_off_loss.item())
+        vt_train_losses.append(vt_loss.item())
+        
+    #calculate and save total error for this epoch of training
+    epoch_loss = sum(train_losses)/train_total
+    train_epoch_loss.append(epoch_loss)
+    
+    mu_train_epoch_loss.append(sum(mu_train_losses)/train_total)
+    r_train_epoch_loss.append(sum(r_train_losses)/train_total)
+    on_off_train_epoch_loss.append(sum(on_off_train_losses)/train_total)
+    vt_train_epoch_loss.append(sum(vt_train_losses)/train_total)
+    
+    return model, train_epoch_loss, mu_train_epoch_loss, r_train_epoch_loss, on_off_train_epoch_loss, vt_train_epoch_loss
+
+

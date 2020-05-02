@@ -122,3 +122,76 @@ class OPV_m2py_NN(nn.Module):
         im_train_out = self.out_layer(im_out)
         
         return im_out, im_train_out
+    
+    
+    #define the neural network
+class OFET_df_NN(nn.Module):
+    
+    def __init__(self, in_dims, out_dims):
+        super(OFET_df_NN, self).__init__()
+        
+        #emedding layer
+        self.em_layer = nn.Linear(in_dims, out_dims)
+        
+        #hidden layers
+        self.h_layer1 = nn.Linear(out_dims, 32)
+        self.h_layer2 = nn.Linear(32, 16)
+        self.h_layer3 = nn.Linear(16, 8)
+        
+        #output layers
+        self.mu_branch = nn.Sequential(
+            nn.Dropout(p = 0.3),
+            nn.Linear(8, 32),
+            nn.Linear(32, 64),
+            nn.Linear(64, 16),
+            nn.Dropout(p = 0.3),
+            nn.Softplus(),
+            nn.Linear(16, 1)
+        )
+        self.r_branch = nn.Sequential(
+            nn.Dropout(p = 0.3),
+            nn.Linear(8, 32),
+            nn.Linear(32, 64),
+            nn.Linear(64, 16),
+            nn.Dropout(p = 0.3),
+            nn.Softplus(),
+            nn.Linear(16, 1)
+        )
+        self.on_off_branch = nn.Sequential(
+            nn.Dropout(p = 0.3),
+            nn.Linear(8, 32),
+            nn.Linear(32, 64),
+            nn.Linear(64, 16),
+            nn.Dropout(p = 0.3),
+            nn.Softplus(),
+            nn.Linear(16, 1)
+        )
+        self.vt_branch = nn.Sequential(
+            nn.Dropout(p = 0.3),
+            nn.Linear(8, 32),
+            nn.Linear(32, 64),
+            nn.Linear(64, 16),
+            nn.Dropout(p = 0.3),
+            nn.Softplus(),
+            nn.Linear(16, 1)
+        )
+        
+    def forward(self, x):
+        #data enters embedding layer
+        out = self.em_layer(x)
+        
+        #embedded data is passed to hidden layers
+        out = self.h_layer1(out)
+        out = self.h_layer2(out)
+        out = self.h_layer3(out)
+        
+        #embedded data is passed to output layer
+        mu_out = self.mu_branch(out)
+        r_out = self.r_branch(out)
+        on_off_out = self.on_off_branch(out)
+        vt_out = self.vt_branch(out)
+        
+        return mu_out, r_out, on_off_out, vt_out
+    
+    
+    

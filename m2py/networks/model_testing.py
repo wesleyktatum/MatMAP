@@ -128,3 +128,86 @@ def eval_OPV_m2py_model(model, testing_data_set, criterion):
     return total_test_loss
 
 
+def eval_OFET_df_model(model, testing_data_set):
+    
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    
+    #evaluate the model
+    model.eval()
+    
+    mu_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 0.1)
+    r_criterion = PhysLoss.ThresholdedMSELoss(lower = 0.3, upper = 1)
+    on_off_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 300000)
+    vt_criterion = PhysLoss.ThresholdedMSELoss(lower = -25, upper = 125)
+    
+    accuracy = PhysLoss.MAPE()
+
+    #don't update nodes during evaluation b/c not training
+    with torch.no_grad():
+        test_losses = []
+        mu_test_losses = []
+        r_test_losses = []
+        on_off_test_losses = []
+        vt_test_losses = []
+        
+        mu_test_acc_list = []
+        r_test_acc_list = []
+        on_off_test_acc_list = []
+        vt_test_acc_list = []
+    
+        test_total = 0
+
+        for inputs, mu_labels, r_labels, on_off_labels, vt_labels in testing_data_set:
+            inputs = inputs.to(device)
+            mu_labels = mu_labels.to(device)
+            r_labels = r_labels.to(device)
+            on_off_labels = on_off_labels.to(device)
+            vt_labels = vt_labels.to(device)
+
+            mu_out, r_out, on_off_out, vt_out = model(inputs)
+
+    
+            # calculate loss per batch of testing data
+            mu_loss = mu_criterion(mu_out, mu_labels)
+            r_loss = r_criterion(r_out, r_labels)
+            on_off_loss = on_off_criterion(on_off_out, on_off_labels)
+            vt_loss = vt_criterion(vt_out, vt_labels)
+            
+            test_loss = mu_loss + r_loss + on_off_loss + vt_loss
+            
+            test_losses.append(test_loss.item())
+            mu_test_losses.append(mu_loss.item())
+            r_test_losses.append(r_loss.item())
+            on_off_test_losses.append(on_off_loss.item())
+            vt_test_losses.append(vt_loss.item())
+            test_total += 1 
+            
+            mu_acc = accuracy(mu_out, mu_labels)
+            r_acc = accuracy(r_out, r_labels)
+            on_off_acc = accuracy(on_off_out, on_off_labels)
+            vt_acc = accuracy(vt_out, vt_labels)
+            
+            mu_test_acc_list.append(mu_acc)
+            r_test_acc_list.append(r_acc)
+            on_off_test_acc_list.append(on_off_acc)
+            vt_test_acc_list.append(vt_acc)
+
+        test_epoch_loss = sum(test_losses)/test_total
+        mu_test_epoch_loss = sum(mu_test_losses)/test_total
+        r_test_epoch_loss = sum(r_test_losses)/test_total
+        on_off_test_epoch_loss = sum(on_off_test_losses)/test_total
+        vt_test_epoch_loss = sum(vt_test_losses)/test_total
+        
+        mu_epoch_acc = sum(mu_test_acc_list)/test_total
+        r_epoch_acc = sum(r_test_acc_list)/test_total
+        on_off_epoch_acc = sum(on_off_test_acc_list)/test_total
+        vt_epoch_acc = sum(vt_test_acc_list)/test_total 
+
+        print(f"Total Epoch Testing Loss = {test_epoch_loss}")
+        print(f"Total Epoch Testing Accuracy: mu = {mu_epoch_acc}")
+        print(f"                              r = {r_epoch_acc}")
+        print(f"                              on_off = {on_off_epoch_acc}")
+        print(f"                              Vt = {vt_epoch_acc}")
+    return test_epoch_loss, mu_test_epoch_loss, r_test_epoch_loss, on_off_test_epoch_loss, vt_test_epoch_loss, mu_epoch_acc, r_epoch_acc, on_off_epoch_acc, vt_epoch_acc
+
+
