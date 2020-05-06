@@ -141,39 +141,39 @@ class OFET_df_NN(nn.Module):
         #output layers
         self.mu_branch = nn.Sequential(
             nn.Dropout(p = 0.3),
-            nn.Linear(8, 32),
-            nn.Linear(32, 64),
-            nn.Linear(64, 16),
-            nn.Dropout(p = 0.3),
-            nn.Softplus(),
-            nn.Linear(16, 1)
+            nn.Linear(8, 64),
+#             nn.Linear(32, 64),
+#             nn.Linear(64, 16),
+#             nn.Dropout(p = 0.3),
+#             nn.Softplus(),
+            nn.Linear(64, 1)
         )
         self.r_branch = nn.Sequential(
             nn.Dropout(p = 0.3),
-            nn.Linear(8, 32),
-            nn.Linear(32, 64),
-            nn.Linear(64, 16),
-            nn.Dropout(p = 0.3),
-            nn.Softplus(),
-            nn.Linear(16, 1)
+            nn.Linear(8, 64),
+#             nn.Linear(32, 64),
+#             nn.Linear(64, 16),
+#             nn.Dropout(p = 0.3),
+#             nn.Softplus(),
+            nn.Linear(64, 1)
         )
         self.on_off_branch = nn.Sequential(
             nn.Dropout(p = 0.3),
-            nn.Linear(8, 32),
-            nn.Linear(32, 64),
-            nn.Linear(64, 16),
-            nn.Dropout(p = 0.3),
-            nn.Softplus(),
-            nn.Linear(16, 1)
+            nn.Linear(8, 64),
+#             nn.Linear(32, 64),
+#             nn.Linear(64, 16),
+#             nn.Dropout(p = 0.3),
+#             nn.Softplus(),
+            nn.Linear(64, 1)
         )
         self.vt_branch = nn.Sequential(
             nn.Dropout(p = 0.3),
-            nn.Linear(8, 32),
-            nn.Linear(32, 64),
-            nn.Linear(64, 16),
-            nn.Dropout(p = 0.3),
-            nn.Softplus(),
-            nn.Linear(16, 1)
+            nn.Linear(8, 64),
+#             nn.Linear(32, 64),
+#             nn.Linear(64, 16),
+#             nn.Dropout(p = 0.3),
+#             nn.Softplus(),
+            nn.Linear(64, 1)
         )
         
     def forward(self, x):

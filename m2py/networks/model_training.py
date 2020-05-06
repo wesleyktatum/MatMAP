@@ -37,10 +37,10 @@ def train_OPV_df_model(model, training_data_set, optimizer):
     model.train()
     
     #TODO: Change thresholds to reflect normalization!!
-    pce_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 6)
-    voc_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1)
-    jsc_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 10)
-    ff_criterion = PhysLoss.ThresholdedMSELoss(lower = 10, upper = 85)
+    pce_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
+    voc_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
+    jsc_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
+    ff_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
     
     for train_data, pce_labels, voc_labels, jsc_labels, ff_labels in training_data_set:
         
@@ -137,10 +137,10 @@ def train_OFET_df_model(model, training_data_set, optimizer):
     #switch model to training mode
     model.train()
     
-    mu_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 0.1)
-    r_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1)
-    on_off_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 300000)
-    vt_criterion = PhysLoss.ThresholdedMSELoss(lower = -25, upper = 125)
+    mu_criterion = PhysLoss.ThresholdedMSELoss(lower = -2, upper = 4)
+    r_criterion = PhysLoss.ThresholdedMSELoss(lower = -3, upper = 3)
+    on_off_criterion = PhysLoss.ThresholdedMSELoss(lower = -0.75, upper = 6.5)
+    vt_criterion = PhysLoss.ThresholdedMSELoss(lower = -2, upper = 6)
     
     for train_data, mu_labels, r_labels, on_off_labels, vt_labels in training_data_set:
         

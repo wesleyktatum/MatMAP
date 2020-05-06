@@ -23,10 +23,10 @@ def eval_OPV_df_model(model, testing_data_set):
     #evaluate the model
     model.eval()
     
-    pce_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 6)
-    voc_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1)
-    jsc_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 10)
-    ff_criterion = PhysLoss.ThresholdedMSELoss(lower = 10, upper = 85)
+    pce_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
+    voc_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
+    jsc_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
+    ff_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
     
     accuracy = PhysLoss.MAPE()
 
@@ -135,10 +135,10 @@ def eval_OFET_df_model(model, testing_data_set):
     #evaluate the model
     model.eval()
     
-    mu_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 0.1)
-    r_criterion = PhysLoss.ThresholdedMSELoss(lower = 0.3, upper = 1)
-    on_off_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 300000)
-    vt_criterion = PhysLoss.ThresholdedMSELoss(lower = -25, upper = 125)
+    mu_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
+    r_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
+    on_off_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
+    vt_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
     
     accuracy = PhysLoss.MAPE()
 

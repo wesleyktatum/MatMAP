@@ -39,7 +39,7 @@ def save_trained_model(save_path, epoch, model, optimizer, train_loss, test_loss
     return
 
 
-def df_normalizer(dataframe):
+def df_MinMax_normalize(dataframe):
     
     df = dataframe
     
@@ -59,7 +59,7 @@ def df_normalizer(dataframe):
     return normed_df, df_norm_key 
 
 
-def df_denormalize(normed_df, norm_key):
+def df_MinMax_denormalize(normed_df, norm_key):
     
     denormed_df = pd.DataFrame()
     
@@ -72,6 +72,25 @@ def df_denormalize(normed_df, norm_key):
         denormed_df[colname] = denormed_col
         
     return denormed_df
+
+
+def df_Gaussian_normalize(dataframe):
+    
+    df = dataframe
+    normed_df = pd.DataFrame()
+    norm_key = {}
+    
+    for colname, coldata in df.iteritems():
+        stdev = coldata.std()
+        mean = coldata.mean()
+        
+        normed_col = (coldata - mean) / stdev
+        normed_df[colname] = normed_col
+        
+        norm_key[colname] = [mean, stdev]
+        
+    return normed_df, norm_key
+    
 
 #######################################################
 #                  Plotting Utilities
@@ -248,15 +267,15 @@ def plot_OFET_df_accuracies(epochs, mu_test_epoch_accuracies, r_test_epoch_accur
 def plot_OFET_parity(mu_labels, mu_out, r_labels, r_out,
                      on_off_labels, on_off_out, vt_labels, vt_out):
     
-    xlin = ylin = np.arange(0, 20, 1)
+    xlin = ylin = np.arange(-20, 20, 1)
 
     r2 = r2_score(mu_labels, mu_out)
     fig, ax = plt.subplots(figsize = (8,6))
     plt.scatter(mu_labels, mu_out)
     plt.plot(xlin, ylin, c = 'k')
     ax.annotate(f"$R^{2}$ = {r2:.3f}", xy = (0.2, 0.4))
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
+    ax.set_xlim(-5, 5)
+    ax.set_ylim(-5, 5)
     ax.set_ylabel("Predictions")
     ax.set_xlabel("Ground Truth")
     plt.title('mu Parity')
@@ -267,8 +286,8 @@ def plot_OFET_parity(mu_labels, mu_out, r_labels, r_out,
     ax.annotate(f"$R^{2}$ = {r2:.3f}", xy = (0.2, 0.4))
     plt.scatter(r_labels, r_out)
     plt.plot(xlin, ylin, c = 'k')
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
+    ax.set_xlim(-5, 5)
+    ax.set_ylim(-5, 5)
     ax.set_ylabel("Predictions")
     ax.set_xlabel("Ground Truth")
     plt.title('r Parity')
@@ -279,8 +298,8 @@ def plot_OFET_parity(mu_labels, mu_out, r_labels, r_out,
     ax.annotate(f"$R^{2}$ = {r2:.3f}", xy = (0.2, 0.4))
     plt.scatter(on_off_labels, on_off_out)
     plt.plot(xlin, ylin, c = 'k')
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
+    ax.set_xlim(-5, 5)
+    ax.set_ylim(-5, 5)
     ax.set_ylabel("Predictions")
     ax.set_xlabel("Ground Truth")
     plt.title('on_off Parity')
@@ -291,8 +310,8 @@ def plot_OFET_parity(mu_labels, mu_out, r_labels, r_out,
     ax.annotate(f"$R^{2}$ = {r2:.3f}", xy = (0.2, 0.4))
     plt.scatter(vt_labels, vt_out)
     plt.plot(xlin, ylin, c = 'k')
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
+    ax.set_xlim(-5, 5)
+    ax.set_ylim(-5, 5)
     ax.set_ylabel("Predictions")
     ax.set_xlabel("Ground Truth")
     plt.title('Vt Parity')
