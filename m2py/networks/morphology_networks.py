@@ -16,49 +16,53 @@ class OPV_df_NN(nn.Module):
         super(OPV_df_NN, self).__init__()
         
         #emedding layer
-        self.em_layer = nn.Linear(in_dims, out_dims)
+        self.em_layer = nn.Sequential(
+            nn.Linear(in_dims, 16),
+            nn.ReLU()
+        )
         
         #hidden layers
-        self.h_layer1 = nn.Linear(out_dims, 32)
-        self.h_layer2 = nn.Linear(32, 16)
-        self.h_layer3 = nn.Linear(16, 8)
+        self.h_layers = nn.Sequential(
+            nn.Linear(16, 32),
+            nn.ReLU(),
+            nn.Linear(32, 16),
+            nn.ReLU(),
+            nn.Linear(16, 8),
+            nn.ReLU()
+        )
         
         #output layers
         self.PCE_branch = nn.Sequential(
-            nn.Dropout(p = 0.3),
-            nn.Linear(8, 32),
-            nn.Linear(32, 64),
-            nn.Linear(64, 16),
-            nn.Dropout(p = 0.3),
-            nn.Softplus(),
-            nn.Linear(16, 1)
+            nn.Dropout(p = 0.1),
+            nn.Linear(8, 64),
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Linear(64, 1),
+            nn.ReLU()
         )
         self.Voc_branch = nn.Sequential(
-            nn.Dropout(p = 0.3),
-            nn.Linear(8, 32),
-            nn.Linear(32, 64),
-            nn.Linear(64, 16),
-            nn.Dropout(p = 0.3),
-            nn.Softplus(),
-            nn.Linear(16, 1)
+            nn.Dropout(p = 0.1),
+            nn.Linear(8, 64),
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Linear(64, 1),
+            nn.ReLU()
         )
         self.Jsc_branch = nn.Sequential(
-            nn.Dropout(p = 0.3),
-            nn.Linear(8, 32),
-            nn.Linear(32, 64),
-            nn.Linear(64, 16),
-            nn.Dropout(p = 0.3),
-            nn.Softplus(),
-            nn.Linear(16, 1)
+            nn.Dropout(p = 0.1),
+            nn.Linear(8, 64),
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Linear(64, 1),
+            nn.ReLU()
         )
         self.FF_branch = nn.Sequential(
-            nn.Dropout(p = 0.3),
-            nn.Linear(8, 32),
-            nn.Linear(32, 64),
-            nn.Linear(64, 16),
-            nn.Dropout(p = 0.3),
-            nn.Softplus(),
-            nn.Linear(16, 1)
+            nn.Dropout(p = 0.1),
+            nn.Linear(8, 64),
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Linear(64, 1),
+            nn.ReLU()
         )
         
     def forward(self, x):
@@ -66,9 +70,7 @@ class OPV_df_NN(nn.Module):
         out = self.em_layer(x)
         
         #embedded data is passed to hidden layers
-        out = self.h_layer1(out)
-        out = self.h_layer2(out)
-        out = self.h_layer3(out)
+        out = self.h_layers(out)
         
         #embedded data is passed to output layer
         PCE_out = self.PCE_branch(out)
@@ -130,50 +132,54 @@ class OFET_df_NN(nn.Module):
     def __init__(self, in_dims, out_dims):
         super(OFET_df_NN, self).__init__()
         
-        #emedding layer
-        self.em_layer = nn.Linear(in_dims, out_dims)
+         #emedding layer
+        self.em_layer = nn.Sequential(
+            nn.Linear(in_dims, 16),
+            nn.ReLU()
+        )
         
         #hidden layers
-        self.h_layer1 = nn.Linear(out_dims, 32)
-        self.h_layer2 = nn.Linear(32, 16)
-        self.h_layer3 = nn.Linear(16, 8)
+        self.h_layers = nn.Sequential(
+            nn.Linear(16, 32),
+            nn.ReLU(),
+            nn.Linear(32, 16),
+            nn.ReLU(),
+            nn.Linear(16, 8),
+            nn.ReLU()
+        )
         
         #output layers
         self.mu_branch = nn.Sequential(
-            nn.Dropout(p = 0.3),
+            nn.Dropout(p = 0.1),
             nn.Linear(8, 64),
-#             nn.Linear(32, 64),
-#             nn.Linear(64, 16),
-#             nn.Dropout(p = 0.3),
-#             nn.Softplus(),
-            nn.Linear(64, 1)
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Linear(64, 1),
+            nn.ReLU()
         )
         self.r_branch = nn.Sequential(
-            nn.Dropout(p = 0.3),
+            nn.Dropout(p = 0.1),
             nn.Linear(8, 64),
-#             nn.Linear(32, 64),
-#             nn.Linear(64, 16),
-#             nn.Dropout(p = 0.3),
-#             nn.Softplus(),
-            nn.Linear(64, 1)
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Linear(64, 1),
+            nn.ReLU()
         )
         self.on_off_branch = nn.Sequential(
-            nn.Dropout(p = 0.3),
+            nn.Dropout(p = 0.1),
             nn.Linear(8, 64),
-#             nn.Linear(32, 64),
-#             nn.Linear(64, 16),
-#             nn.Dropout(p = 0.3),
-#             nn.Softplus(),
-            nn.Linear(64, 1)
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Linear(64, 1),
+            nn.ReLU()
         )
         self.vt_branch = nn.Sequential(
-            nn.Dropout(p = 0.3),
+            nn.Dropout(p = 0.1),
             nn.Linear(8, 64),
-#             nn.Linear(32, 64),
-#             nn.Linear(64, 16),
-#             nn.Dropout(p = 0.3),
-#             nn.Softplus(),
-            nn.Linear(64, 1)
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Linear(64, 1),
+            nn.ReLU()
         )
         
     def forward(self, x):
@@ -181,9 +187,7 @@ class OFET_df_NN(nn.Module):
         out = self.em_layer(x)
         
         #embedded data is passed to hidden layers
-        out = self.h_layer1(out)
-        out = self.h_layer2(out)
-        out = self.h_layer3(out)
+        out = self.h_layers(out)
         
         #embedded data is passed to output layer
         mu_out = self.mu_branch(out)

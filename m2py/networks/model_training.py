@@ -36,11 +36,16 @@ def train_OPV_df_model(model, training_data_set, optimizer):
     #switch model to training mode
     model.train()
     
-    #TODO: Change thresholds to reflect normalization!!
-    pce_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
-    voc_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
-    jsc_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
-    ff_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
+    #Define boundaries for physical solutions
+    pce_criterion = PhysLoss.ThresholdedMSELoss(lower = -5, upper = 1.5)
+    voc_criterion = PhysLoss.ThresholdedMSELoss(lower = -5, upper = 1.5)
+    jsc_criterion = PhysLoss.ThresholdedMSELoss(lower = -5, upper = 1.5)
+    ff_criterion = PhysLoss.ThresholdedMSELoss(lower = -5, upper = 1.5)
+
+#     pce_criterion = nn.MSELoss()
+#     voc_criterion = nn.MSELoss()
+#     jsc_criterion = nn.MSELoss()
+#     ff_criterion = nn.MSELoss()
     
     for train_data, pce_labels, voc_labels, jsc_labels, ff_labels in training_data_set:
         
@@ -54,7 +59,7 @@ def train_OPV_df_model(model, training_data_set, optimizer):
         PCE_out, Voc_out, Jsc_out, FF_out = model(train_data) #gather model predictions for this loop
         
         #calculate error in the predictions
-        pce_loss = pce_criterion(predictions = PCE_out, labels = pce_labels)
+        pce_loss = pce_criterion(PCE_out, pce_labels)
         voc_loss = voc_criterion(Voc_out, voc_labels)
         jsc_loss = jsc_criterion(Jsc_out, jsc_labels)
         ff_loss = ff_criterion(FF_out, ff_labels)
@@ -137,10 +142,15 @@ def train_OFET_df_model(model, training_data_set, optimizer):
     #switch model to training mode
     model.train()
     
-    mu_criterion = PhysLoss.ThresholdedMSELoss(lower = -2, upper = 4)
-    r_criterion = PhysLoss.ThresholdedMSELoss(lower = -3, upper = 3)
-    on_off_criterion = PhysLoss.ThresholdedMSELoss(lower = -0.75, upper = 6.5)
-    vt_criterion = PhysLoss.ThresholdedMSELoss(lower = -2, upper = 6)
+#     mu_criterion = PhysLoss.ThresholdedMSELoss(lower = -2, upper = 4)
+#     r_criterion = PhysLoss.ThresholdedMSELoss(lower = -3, upper = 3)
+#     on_off_criterion = PhysLoss.ThresholdedMSELoss(lower = -0.75, upper = 6.5)
+#     vt_criterion = PhysLoss.ThresholdedMSELoss(lower = -2, upper = 6)
+
+    mu_criterion = nn.MSELoss()
+    r_criterion = nn.MSELoss()
+    on_off_criterion = nn.MSELoss()
+    vt_criterion = nn.MSELoss()
     
     for train_data, mu_labels, r_labels, on_off_labels, vt_labels in training_data_set:
         

@@ -23,10 +23,10 @@ def eval_OPV_df_model(model, testing_data_set):
     #evaluate the model
     model.eval()
     
-    pce_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
-    voc_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
-    jsc_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
-    ff_criterion = PhysLoss.ThresholdedMSELoss(lower = 0, upper = 1.5)
+    pce_criterion = PhysLoss.ThresholdedMSELoss(lower = -5, upper = 1.5)
+    voc_criterion = PhysLoss.ThresholdedMSELoss(lower = -5, upper = 1.5)
+    jsc_criterion = PhysLoss.ThresholdedMSELoss(lower = -5, upper = 1.5)
+    ff_criterion = PhysLoss.ThresholdedMSELoss(lower = -5, upper = 1.5)
     
     accuracy = PhysLoss.MAPE()
 
@@ -92,7 +92,7 @@ def eval_OPV_df_model(model, testing_data_set):
         ff_epoch_acc = sum(ff_test_acc_list)/test_total 
 
         print(f"Total Epoch Testing Loss = {test_epoch_loss}")
-        print(f"Total Epoch Testing Accuracy: PCE = {pce_epoch_acc}")
+        print(f"Total Epoch Testing MAPE: PCE = {pce_epoch_acc}")
         print(f"                              Voc = {voc_epoch_acc}")
         print(f"                              Jsc = {jsc_epoch_acc}")
         print(f"                              FF = {ff_epoch_acc}")
@@ -204,7 +204,7 @@ def eval_OFET_df_model(model, testing_data_set):
         vt_epoch_acc = sum(vt_test_acc_list)/test_total 
 
         print(f"Total Epoch Testing Loss = {test_epoch_loss}")
-        print(f"Total Epoch Testing Accuracy: mu = {mu_epoch_acc}")
+        print(f"Total Epoch Testing MAPE: mu = {mu_epoch_acc}")
         print(f"                              r = {r_epoch_acc}")
         print(f"                              on_off = {on_off_epoch_acc}")
         print(f"                              Vt = {vt_epoch_acc}")

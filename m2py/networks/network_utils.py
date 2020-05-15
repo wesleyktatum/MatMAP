@@ -90,6 +90,20 @@ def df_Gaussian_normalize(dataframe):
         norm_key[colname] = [mean, stdev]
         
     return normed_df, norm_key
+
+
+#######################################################
+#                  Network Model Utilities
+#######################################################
+
+def init_weights(model):
+    if type(model) == torch.nn.Linear:
+        torch.nn.init.xavier_uniform_(model.weight)
+        model.bias.data.fill_(0.01)
+        
+#     if type(model) == nn.BatchNorm1d:
+#         model.reset_parameters()
+
     
 
 #######################################################
@@ -115,17 +129,17 @@ def plot_OPV_df_loss(epochs, train_epoch_losses, test_epoch_losses,
     
     fig, ax = plt.subplots(figsize = (8,6))
 
-    plt.plot(epochs, pce_train_epoch_losses, c = 'k', label = 'pce training')
-    plt.plot(epochs, pce_test_epoch_losses, '-.', c = 'k', label = 'pce testing')
+    plt.plot(epochs[::], pce_train_epoch_losses[::], c = 'k', label = 'pce training')
+    plt.plot(epochs[::], pce_test_epoch_losses[::], '-.', c = 'k', label = 'pce testing')
 
-    plt.plot(epochs, voc_train_epoch_losses, c = 'r', label = 'voc training')
-    plt.plot(epochs, voc_test_epoch_losses, '-.', c = 'r', label = 'voc testing')
+    plt.plot(epochs[::], voc_train_epoch_losses[::], c = 'r', label = 'voc training')
+    plt.plot(epochs[::], voc_test_epoch_losses[::], '-.', c = 'r', label = 'voc testing')
 
-    plt.plot(epochs, jsc_train_epoch_losses, c = 'g', label = 'jsc training')
-    plt.plot(epochs, jsc_test_epoch_losses, '-.', c = 'g', label = 'jsc testing') 
+    plt.plot(epochs[::], jsc_train_epoch_losses[::], c = 'g', label = 'jsc training')
+    plt.plot(epochs[::], jsc_test_epoch_losses[::], '-.', c = 'g', label = 'jsc testing') 
     
-    plt.plot(epochs, ff_train_epoch_losses, c = 'b', label = 'ff training') 
-    plt.plot(epochs, ff_test_epoch_losses, '-.', c = 'b', label = 'ff testing') 
+    plt.plot(epochs[::], ff_train_epoch_losses[::], c = 'b', label = 'ff training') 
+    plt.plot(epochs[::], ff_test_epoch_losses[::], '-.', c = 'b', label = 'ff testing') 
 
     plt.legend(loc = 'upper right')
     plt.title("Branch Training & Testing Error")
@@ -155,53 +169,53 @@ def plot_OPV_df_accuracies(epochs, pce_test_epoch_accuracies, voc_test_epoch_acc
 def plot_OPV_parity(pce_labels, PCE_out, voc_labels, Voc_out,
                     jsc_labels, Jsc_out, ff_labels, FF_out):
     
-    xlin = ylin = np.arange(0, 20, 1)
+    xlin = ylin = np.arange(-10, 10, 1)
 
     r2 = r2_score(pce_labels, PCE_out)
     fig, ax = plt.subplots(figsize = (8,6))
-    plt.scatter(pce_labels, PCE_out)
+    plt.scatter(PCE_out, pce_labels)
     plt.plot(xlin, ylin, c = 'k')
     ax.annotate(f"$R^{2}$ = {r2:.3f}", xy = (0.2, 0.4))
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    ax.set_ylabel("Predictions")
-    ax.set_xlabel("Ground Truth")
+    ax.set_xlim(min(pce_labels.min(), PCE_out.min()), max(pce_labels.max(), PCE_out.max()))
+    ax.set_ylim(min(pce_labels.min(), PCE_out.min()), max(pce_labels.max(), PCE_out.max()))
+    ax.set_xlabel("Predictions")
+    ax.set_ylabel("Ground Truth")
     plt.title('PCE Parity')
     plt.show()
 
     r2 = r2_score(voc_labels, Voc_out)
     fig, ax = plt.subplots(figsize = (8,6))
     ax.annotate(f"$R^{2}$ = {r2:.3f}", xy = (0.2, 0.4))
-    plt.scatter(voc_labels, Voc_out)
+    plt.scatter(Voc_out, voc_labels)
     plt.plot(xlin, ylin, c = 'k')
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    ax.set_ylabel("Predictions")
-    ax.set_xlabel("Ground Truth")
+    ax.set_xlim(min(voc_labels.min(), Voc_out.min()), max(voc_labels.max(), Voc_out.max()))
+    ax.set_ylim(min(voc_labels.min(), Voc_out.min()), max(voc_labels.max(), Voc_out.max()))
+    ax.set_xlabel("Predictions")
+    ax.set_ylabel("Ground Truth")
     plt.title('Voc Parity')
     plt.show()
 
     r2 = r2_score(jsc_labels, Jsc_out)
     fig, ax = plt.subplots(figsize = (8,6))
     ax.annotate(f"$R^{2}$ = {r2:.3f}", xy = (0.2, 0.4))
-    plt.scatter(jsc_labels, Jsc_out)
+    plt.scatter(Jsc_out, jsc_labels)
     plt.plot(xlin, ylin, c = 'k')
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    ax.set_ylabel("Predictions")
-    ax.set_xlabel("Ground Truth")
+    ax.set_xlim(min(jsc_labels.min(), Jsc_out.min()), max(jsc_labels.max(), Jsc_out.max()))
+    ax.set_ylim(min(jsc_labels.min(), Jsc_out.min()), max(jsc_labels.max(), Jsc_out.max()))
+    ax.set_xlabel("Predictions")
+    ax.set_ylabel("Ground Truth")
     plt.title('Jsc Parity')
     plt.show()
 
     r2 = r2_score(ff_labels, FF_out)
     fig, ax = plt.subplots(figsize = (8,6))
     ax.annotate(f"$R^{2}$ = {r2:.3f}", xy = (0.2, 0.4))
-    plt.scatter(ff_labels, FF_out)
+    plt.scatter(FF_out, ff_labels)
     plt.plot(xlin, ylin, c = 'k')
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    ax.set_ylabel("Predictions")
-    ax.set_xlabel("Ground Truth")
+    ax.set_xlim(min(ff_labels.min(), FF_out.min()), max(ff_labels.max(), FF_out.max()))
+    ax.set_ylim(min(ff_labels.min(), FF_out.min()), max(ff_labels.max(), FF_out.max()))
+    ax.set_xlabel("Predictions")
+    ax.set_ylabel("Ground Truth")
     plt.title('FF Parity')
     plt.show()
     
@@ -215,8 +229,8 @@ def plot_OFET_df_loss(epochs, train_epoch_losses, test_epoch_losses,
     
     fig, ax = plt.subplots(figsize = (8,6))
     
-    plt.plot(epochs, train_epoch_losses, c = 'k', label = 'training error')
-    plt.plot(epochs, test_epoch_losses, c = 'r', label = 'testing error')
+    plt.plot(epochs[::], train_epoch_losses[::], c = 'k', label = 'training error')
+    plt.plot(epochs[::], test_epoch_losses[::], c = 'r', label = 'testing error')
     plt.legend(loc = 'upper right')
     plt.title("Total Training & Testing Error")
     ax.set_xlabel('Epoch')
@@ -225,17 +239,17 @@ def plot_OFET_df_loss(epochs, train_epoch_losses, test_epoch_losses,
     
     fig, ax = plt.subplots(figsize = (8,6))
 
-    plt.plot(epochs, mu_train_epoch_losses, c = 'k', label = 'mu training')
-    plt.plot(epochs, mu_test_epoch_losses, '-.', c = 'k', label = 'mu testing')
+    plt.plot(epochs[::], mu_train_epoch_losses[::], c = 'k', label = 'mu training')
+    plt.plot(epochs[::], mu_test_epoch_losses[::], '-.', c = 'k', label = 'mu testing')
 
-    plt.plot(epochs, r_train_epoch_losses, c = 'r', label = 'r training')
-    plt.plot(epochs, r_test_epoch_losses, '-.', c = 'r', label = 'r testing')
+    plt.plot(epochs[::], r_train_epoch_losses[::], c = 'r', label = 'r training')
+    plt.plot(epochs[::], r_test_epoch_losses[::], '-.', c = 'r', label = 'r testing')
 
-    plt.plot(epochs, on_off_train_epoch_losses, c = 'g', label = 'on_off training')
-    plt.plot(epochs, on_off_test_epoch_losses, '-.', c = 'g', label = 'on_off testing') 
+    plt.plot(epochs[::], on_off_train_epoch_losses[::], c = 'g', label = 'on_off training')
+    plt.plot(epochs[::], on_off_test_epoch_losses[::], '-.', c = 'g', label = 'on_off testing') 
     
-    plt.plot(epochs, vt_train_epoch_losses, c = 'b', label = 'vt training') 
-    plt.plot(epochs, vt_test_epoch_losses, '-.', c = 'b', label = 'vt testing') 
+    plt.plot(epochs[::], vt_train_epoch_losses[::], c = 'b', label = 'vt training') 
+    plt.plot(epochs[::], vt_test_epoch_losses[::], '-.', c = 'b', label = 'vt testing') 
 
     plt.legend(loc = 'upper right')
     plt.title("Branch Training & Testing Error")
